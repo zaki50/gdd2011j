@@ -24,6 +24,10 @@ public class CodeGenerator {
     move-result-object v0
         */
         googleAccount = googleAccount.toLowerCase();
+        //親切心で追加。メールアドレスの形式でもOK!
+        if (googleAccount.indexOf('@') != -1) {
+            googleAccount = googleAccount.substring(0, googleAccount.indexOf('@'));
+        }
 
         /*
     invoke-virtual {p1}, Ljava/lang/String;->trim()Ljava/lang/String;
