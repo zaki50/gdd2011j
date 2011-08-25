@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest android:versionCode="2" android:versionName="1.1" package="com.google.android.apps.gddquiz.gddquiz11service"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-sdk android:minSdkVersion="4" />
+    <application android:label="@string/app_name" android:icon="@drawable/devquiz2011">
+        <activity android:theme="@android:style/Theme.Light" android:label="@string/app_name" android:name=".DevQuiz11ServiceActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <service android:name=".DevQuiz11Service">
+            <intent-filter>
+                <action android:name="com.google.android.apps.gddquiz.IQuizService" />
+            </intent-filter>
+        </service>
+    </application>
+</manifest>

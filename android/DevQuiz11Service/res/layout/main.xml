@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView android:layout_width="fill_parent" android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout android:gravity="top|center" android:orientation="vertical" android:paddingLeft="@dimen/main_padding" android:paddingTop="@dimen/main_padding" android:paddingRight="@dimen/main_padding" android:paddingBottom="@dimen/main_padding" android:layout_width="fill_parent" android:layout_height="wrap_content">
+        <TextView android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="@dimen/main_spacer_vertical" android:text="@string/intro" />
+        <TextView android:textStyle="bold" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/label_email" />
+        <EditText android:id="@id/edit_email" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="@dimen/main_spacer_vertical" android:singleLine="true" />
+        <TextView android:textStyle="bold" android:layout_width="fill_parent" android:layout_height="wrap_content" android:text="@string/label_passphrase" />
+        <EditText android:id="@id/edit_passphrase" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginBottom="@dimen/main_spacer_vertical" android:singleLine="true" />
+        <Button android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="@dimen/main_button_margin_left" android:layout_marginTop="@dimen/main_spacer_vertical" android:layout_marginRight="@dimen/main_button_margin_right" android:text="@string/btn_save" android:onClick="onClickSave" />
+    </LinearLayout>
+</ScrollView>
