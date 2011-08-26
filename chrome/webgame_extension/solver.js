@@ -1,12 +1,36 @@
-var cards = document.getElementsByClass('card')
-alert("" + cards.length);
+var cards = document.getElementsByClassName('card');
 
-var element = document.getElementById('card0');
-if (element == null) {
-  alert('Card element is not found. Check element id.');
-} else {
-  var myevent = document.createEvent('MouseEvents');
-  myevent.initEvent('click', false, true);
-  element.dispatchEvent(myevent);
-  alert('Card color is "' + element.style.backgroundColor + '".');
+// color value to node
+var colorsToNode = {};
+
+var myevent = document.createEvent('MouseEvents');
+myevent.initEvent('click', false, true);
+
+var prevColor;
+var isFirst = false;
+for (var index = 0; index < cards.length; index++) {
+    var card = cards[index];
+    console.log("card: " + card.id);
+    card.dispatchEvent(myevent);
+    isFirst = !isFirst;
+    var color = card.style.backgroundColor;
+    var pair = colorsToNode[color];
+    if (!pair) {
+        // 相方が不明の場合は連想配列にいれて後で処理する
+        console.log("pair not found");
+        colorsToNode[color] = card;
+        continue;
+    }
+    // ここからは相方が見つかった場合
+    if (isFirst) {
+        // もう一回開けるので、相方を開く
+        console.log("pair found: " + pair.id);
+        pair.dispatchEvent(myevent);
+        isFirst = !isFirst;
+    } else {
+        // 新たに両方を開く。たまたま直前のカードとペアになっている可能性があるが気にしない
+        console.log("pair found: " + pair.id + " and " + card.id);
+        pair.dispatchEvent(myevent);
+        card.dispatchEvent(myevent);
+    }
 }
