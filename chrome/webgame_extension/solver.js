@@ -1,32 +1,25 @@
 var cards = document.getElementsByClassName('card');
-
-// color value to node
 var colorsToNode = {};
-
-var myevent = document.createEvent('MouseEvents');
-myevent.initEvent('click', false, true);
-
-var prevColor;
+var clickEvent = document.createEvent('MouseEvents');
+clickEvent.initEvent('click', false, true);
 var isFirst = false;
+var click = function(card) {card.dispatchEvent(clickEvent); isFirst = !isFirst;}
+
 for (var index = 0; index < cards.length; index++) {
     var card = cards[index];
-    card.dispatchEvent(myevent);
-    isFirst = !isFirst;
+    click(card);
     var color = card.style.backgroundColor;
     var pair = colorsToNode[color];
-    if (!pair) {
-        // 相方が不明の場合は連想配列にいれて後で処理する
+    if (!pair) { // 相方が不明の場合
         colorsToNode[color] = card;
         continue;
     }
     // ここからは相方が見つかった場合
     if (isFirst) {
-        // もう一回開けるので、相方を開く
-        pair.dispatchEvent(myevent);
-        isFirst = !isFirst;
+        click(pair);
     } else {
-        // 新たに両方を開く。たまたま直前のカードとペアになっている可能性があるが気にしない
-        pair.dispatchEvent(myevent);
-        card.dispatchEvent(myevent);
+        // たまたま直前のカードとペアになっている可能性があるが気にしない
+        click(pair);
+        click(card);
     }
 }
