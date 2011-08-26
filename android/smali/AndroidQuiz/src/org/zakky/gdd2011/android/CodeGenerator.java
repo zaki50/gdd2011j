@@ -23,7 +23,8 @@ public class CodeGenerator {
 
     move-result-object v0
         */
-        googleAccount = googleAccount.toLowerCase();
+        // ↓の toLowerCase は不要。元のプログラムのバグなのでなおしておく
+        //googleAccount = googleAccount.toLowerCase();
         //親切心で追加。メールアドレスの形式でもOK!
         if (googleAccount.indexOf('@') != -1) {
             googleAccount = googleAccount.substring(0, googleAccount.indexOf('@'));
