@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="intro">DevQuizサイト登録に利用したeメールアドレスと、DevQuizサイトから得た passcode を入力してください (大文字・小文字は区別されますのでご注意ください)。 入力できたら、「保存」ボタンをクリックして、この画面を閉じてください。 その後、あなたのプログラムを実行して解答を取得してください。</string>
+    <string name="label_email">登録eメールアドレス:</string>
+    <string name="label_passphrase">Passcode:</string>
+    <string name="btn_save">保存</string>
+</resources>

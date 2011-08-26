@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="intro">Please enter the email address (your DevQuiz registration email address) and passcode you got from DevQuiz web site. Remember these strings are case-sensitive. Then press Save and close this application. Then run your software to get the answer.</string>
+    <string name="label_email">Email address:</string>
+    <string name="label_passphrase">Passcode:</string>
+    <string name="btn_save">Save</string>
+    <string name="app_name">DevQuiz 2011</string>
+</resources>

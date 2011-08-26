@@ -1,5 +1,5 @@
 version: 1.4.1
-apkFileName: DevQuiz11Service.apk
+apkFileName: DevQuiz11Service_r1.apk
 isFrameworkApk: false
 usesFramework:
   ids:
