@@ -1,0 +1,17 @@
+{
+  "name": "WebGameExtension",
+  "version": "1.0",
+  "description": "solves webgame automatically.",
+  "content_scripts": [
+    {
+      "matches": [
+        "http://gdd-2011-quiz-japan.appspot.com/webgame/problem*"
+      ],
+      "js": [
+        "solver.js"
+      ]
+    }
+  ],
+  "permissions": [
+  ]
+}
