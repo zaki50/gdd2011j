@@ -14,7 +14,6 @@ import android.widget.Toast;
 import com.google.android.apps.gddquiz.IQuizService;
 
 public class DevQuiz11AppActivity extends Activity implements ServiceConnection {
-    /** Called when the activity is first created. */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
