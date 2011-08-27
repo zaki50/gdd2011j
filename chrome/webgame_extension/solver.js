@@ -3,7 +3,10 @@ var colorsToNode = {};
 var clickEvent = document.createEvent('MouseEvents');
 clickEvent.initEvent('click', false, true);
 var isFirst = false;
-var click = function(card) {card.dispatchEvent(clickEvent); isFirst = !isFirst;}
+var click = function(card) {
+    card.dispatchEvent(clickEvent);
+    isFirst = !isFirst;
+}
 
 for (var index = 0; index < cards.length; index++) {
     var card = cards[index];
