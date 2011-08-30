@@ -3,7 +3,7 @@ package org.zakky.gdd2011.slidepuzzle;
 
 import java.util.Random;
 
-public class Puzzle {
+public class Puzzle implements Cloneable {
 
     public enum Direction {
         UP('U'), DOWN('D'), LEFT('L'), RIGHT('R');
@@ -24,7 +24,7 @@ public class Puzzle {
                 case UP:
                     return DOWN;
                 case DOWN:
-                    return DOWN;
+                    return UP;
                 case LEFT:
                     return RIGHT;
                 case RIGHT:
@@ -88,14 +88,13 @@ public class Puzzle {
         history_ = new StringBuilder();
     }
 
-    public Puzzle(int width, int height, byte[] board, int zeroIndex, int prevZeroIndex,
-            String history) {
+    public Puzzle(int width, int height, byte[] board, int zeroIndex, StringBuilder history) {
         super();
         width_ = width;
         height_ = height;
         board_ = board;
         zeroIndex_ = zeroIndex;
-        history_ = new StringBuilder(history);
+        history_ = history;
     }
 
     public int getWidth() {
@@ -167,8 +166,8 @@ public class Puzzle {
         final byte[] board = board_.clone();
         board[zeroIndex_] = board[nextIndex];
         board[nextIndex] = '0';
-        return new Puzzle(width_, height_, board, nextIndex, zeroIndex_, history_.toString()
-                + dir.getLetter());
+        return new Puzzle(width_, height_, board, nextIndex, new StringBuilder(history_.toString()
+                + dir.getLetter()));
     }
 
     public boolean move2(Direction dir) {
@@ -202,6 +201,13 @@ public class Puzzle {
 
     public String getHistory() {
         return history_.toString();
+    }
+
+    @Override
+    public Puzzle clone() {
+        final Puzzle clone = new Puzzle(width_, height_, board_.clone(), zeroIndex_,
+                new StringBuilder(history_));
+        return clone;
     }
 
     private int toIndex(int x, int y) {

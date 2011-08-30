@@ -7,6 +7,7 @@ import java.io.InputStreamReader;
 
 import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
 import org.zakky.gdd2011.slidepuzzle.solver.BreadthFirstOrderSearchSolver;
+import org.zakky.gdd2011.slidepuzzle.solver.IddfsSolver;
 
 public class Main {
 
@@ -33,11 +34,24 @@ public class Main {
             for (int i = 0; i < lineCount; i++) {
                 final String line = reader.readLine();
                 final Puzzle puzzle = new Puzzle(line);
-                if (puzzle.getWidth() <= 3 || puzzle.getHeight() <= 3) {
-                    if (5 <= puzzle.getWidth() || 5 <= puzzle.getHeight()) {
+
+//                if (puzzle.getWidth() <= 4 || puzzle.getHeight() <= 4) {
+//                    if (5 <= puzzle.getWidth() || 5 <= puzzle.getHeight()) {
+//                        System.out.println(i + ":");
+//                        continue;
+//                    }
+
+                    final IddfsSolver solver = new IddfsSolver(puzzle, 
+                            leftLimit - leftUsed__, rightLimit - rightUsed__, upLimit - upUsed__,
+                            downLimit - downUsed__);
+                    final String answer = solver.solve();
+                    if (answer == null) {
                         System.out.println(i + ":");
-                        continue;
+                    } else {
+                        incrementUsedCount(answer);
+                        System.out.println(i + ":" + answer);
                     }
+/*
                     final SlidePuzzleSolver solver = new BreadthFirstOrderSearchSolver(puzzle,
                             leftLimit - leftUsed__, rightLimit - rightUsed__, upLimit - upUsed__,
                             downLimit - downUsed__);
@@ -48,10 +62,11 @@ public class Main {
                         incrementUsedCount(answer);
                         System.out.println(i + ":" + answer);
                     }
-                } else {
-                    // まだ規模が大きくて解けない
-                    System.out.println(i + ":");
-                }
+                    */
+//                } else {
+//                    // まだ規模が大きくて解けない
+//                    System.out.println(i + ":");
+//                }
             }
         } finally {
             reader.close();
