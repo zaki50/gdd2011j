@@ -117,6 +117,16 @@ public class Puzzle implements Cloneable {
         return (char) result;
     }
 
+    public int getZeroX() {
+        final int zeroX = zeroIndex_ % width_;
+        return zeroX;
+    }
+
+    public int getZeroY() {
+        final int zeroY = zeroIndex_ / width_;
+        return zeroY;
+    }
+
     public char getNext(int x, int y, Direction dir) {
         if (x < 0 || width_ <= x) {
             throw new ArrayIndexOutOfBoundsException("out of bounds: x(" + x + ")");

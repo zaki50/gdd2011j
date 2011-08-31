@@ -30,7 +30,11 @@ public final class IddfsSolver implements SlidePuzzleSolver {
 
     @Override
     public String solve() {
-        final int expectedLeastSteps = SolverUtil.calcManhattanDistanceSum(initial_);
+        final int mdSum = SolverUtil.calcManhattanDistanceSum(initial_) / 2;
+        final int mdZero = SolverUtil.calcManhattanDistance(initial_.getWidth() - 1,
+                initial_.getHeight() - 1, initial_.getZeroX(), initial_.getZeroY());
+        final int expectedLeastSteps = mdSum + ((mdSum % 2) == (mdZero % 2) ? 0 : 1);
+
         for (int stepLimit = expectedLeastSteps; stepLimit <= STEP_LIMIT; stepLimit += 2) {
             final String result = search(initial_.clone(), stepLimit);
             if (result != null) {
@@ -44,7 +48,6 @@ public final class IddfsSolver implements SlidePuzzleSolver {
         if (stepLimit == 0) {
             return null;
         }
-        //System.err.println(p.getHistory());
 
         stepLimit--;
         for (Direction dir : Direction.valuesByRandomOrder()) {
