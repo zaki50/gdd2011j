@@ -30,6 +30,8 @@ public class Main {
             final int downLimit = Integer.parseInt(limits[3]);
             final int lineCount = Integer.parseInt(reader.readLine());
 
+            Direction.setSeed(100L);
+
             int found = 0;
             for (int i = 0; i < lineCount; i++) {
                 final String line = reader.readLine();
