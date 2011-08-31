@@ -11,6 +11,10 @@ public class Puzzle implements Cloneable {
 
         private static final Random RAND = new Random();
 
+        public static void setSeed(long seed) {
+            RAND.setSeed(seed);
+        }
+
         Direction(char letter) {
             letter_ = letter;
         }

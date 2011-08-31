@@ -8,7 +8,7 @@ import org.zakky.gdd2011.slidepuzzle.Puzzle;
 import org.zakky.gdd2011.slidepuzzle.SlidePuzzleSolver;
 import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
 
-public class BreadthFirstOrderSearchSolver implements SlidePuzzleSolver {
+public class BfsSolver implements SlidePuzzleSolver {
 
     private final Puzzle initial_;
 
@@ -20,7 +20,7 @@ public class BreadthFirstOrderSearchSolver implements SlidePuzzleSolver {
 
     private final int downLimit_;
 
-    public BreadthFirstOrderSearchSolver(Puzzle puzzle, int leftLimit, int rightLimit, int upLimit,
+    public BfsSolver(Puzzle puzzle, int leftLimit, int rightLimit, int upLimit,
             int downLimit) {
         super();
         initial_ = puzzle;

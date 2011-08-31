@@ -62,6 +62,10 @@ public final class IddfsSolver implements SlidePuzzleSolver {
                 return next.getHistory();
             }
             if (stepLimit < SolverUtil.calcManhattanDistanceSum(next)) {
+                /*
+                 * 1step で md は2減る可能性があるので stepLimit * 2 と比較する必要があるが、
+                 * それだと枝刈りが少なくて時間がかかりすぎるのでとりあえず2倍せずに刈ってみる
+                 */
                 continue;
             }
             final String result = search(next, stepLimit);
