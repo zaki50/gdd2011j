@@ -99,20 +99,20 @@ public class Main {
             }
         }
 
+        System.out.println(leftLimit + " " + rightLimit + " " + upLimit + " " + downLimit);
+
         // 既に解が分かっているものは queue から取り除く
         final Iterator<SolvingState> it = queue.iterator();
         while (it.hasNext()) {
             final SolvingState state = it.next();
             final int questionIndex = state.getTarget().getId();
             if (!knownAnswers.get(questionIndex).isEmpty()) {
-                System.err.println("removed p" + (questionIndex + 1) + " from queue.");
+                System.out.println((questionIndex + 1) + ":" + knownAnswers.get(questionIndex).get(0));
                 it.remove();
             }
         }
 
         Direction.setSeed(100L);
-
-        System.out.println(leftLimit + " " + rightLimit + " " + upLimit + " " + downLimit);
 
         for (int i = 0; i < THREAD_COUNT; i++) {
             final int threadId = i;
