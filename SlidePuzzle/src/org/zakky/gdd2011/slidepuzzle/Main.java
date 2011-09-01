@@ -5,7 +5,9 @@ import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
 import org.zakky.gdd2011.slidepuzzle.solver.IddfsSolver;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -63,39 +65,42 @@ public class Main {
 
         final List<List<String>> knownAnswers = new ArrayList<List<String>>(questionCount);
         {
-            final String input = (args.length < 2) ? "./answers/answer3.txt" : args[1];
-            final BufferedReader reader = new BufferedReader(new InputStreamReader(
-                    new FileInputStream(input), "iso8859-1"));
-            try {
-                final String[] limits = reader.readLine().split(" ");
-                /* leftLimit = */Integer.parseInt(limits[0]);
-                /* rightLimit = */Integer.parseInt(limits[1]);
-                /* upLimit = */Integer.parseInt(limits[2]);
-                /* downLimit = */Integer.parseInt(limits[3]);
-                /* final int lineCount = */Integer.parseInt(reader.readLine());
+            for (int i = 0; i < questionCount; i++) {
+                knownAnswers.add(new ArrayList<String>());
+            }
 
-                for (int i = 0; i < questionCount; i++) {
-                    knownAnswers.add(new ArrayList<String>());
-                }
+            final File[] answerFiles = getTextFiles("./answers");
+            for (File input : answerFiles) {
 
-                for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                    final String[] split = line.split(":");
-                    if (split.length < 2) {
-                        continue;
+                final BufferedReader reader = new BufferedReader(new InputStreamReader(
+                        new FileInputStream(input), "iso8859-1"));
+                try {
+                    final String[] limits = reader.readLine().split(" ");
+                    /* leftLimit = */Integer.parseInt(limits[0]);
+                    /* rightLimit = */Integer.parseInt(limits[1]);
+                    /* upLimit = */Integer.parseInt(limits[2]);
+                    /* downLimit = */Integer.parseInt(limits[3]);
+                    /* final int lineCount = */Integer.parseInt(reader.readLine());
+
+                    for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                        final String[] split = line.split(":");
+                        if (split.length < 2) {
+                            continue;
+                        }
+                        final String answer = split[1];
+                        if (answer.trim().isEmpty()) {
+                            continue;
+                        }
+
+                        // 問題番号(1-base)
+                        final int questionNumber = FormatterMain.getQuestionNumber(split[0]);
+                        final List<String> answers = knownAnswers.get(questionNumber - 1);
+                        answers.add(answer);
                     }
-                    final String answer = split[1];
-                    if (answer.trim().isEmpty()) {
-                        continue;
-                    }
 
-                    // 問題番号(1-base)
-                    final int questionNumber = FormatterMain.getQuestionNumber(split[0]);
-                    final List<String> answers = knownAnswers.get(questionNumber - 1);
-                    answers.add(answer);
+                } finally {
+                    reader.close();
                 }
-
-            } finally {
-                reader.close();
             }
         }
 
@@ -108,7 +113,14 @@ public class Main {
             final SolvingState state = it.next();
             final int questionIndex = state.getTarget().getId();
             if (!knownAnswers.get(questionIndex).isEmpty()) {
-                System.out.println((questionIndex + 1) + ":" + knownAnswers.get(questionIndex).get(0));
+                // find shortest
+                String answer = "";
+                for (String candidate : knownAnswers.get(questionIndex)) {
+                    if (answer.isEmpty() || candidate.length() < answer.length()) {
+                        answer = candidate;
+                    }
+                }
+                System.out.println((questionIndex + 1) + ":" + answer);
                 it.remove();
             }
         }
@@ -148,6 +160,20 @@ public class Main {
                 }
             }.start();
         }
+    }
+
+    private static File[] getTextFiles(String parentDir) {
+        final File dir = new File(parentDir);
+        if (!dir.isDirectory()) {
+            return new File[0];
+        }
+        final File[] textFiles = dir.listFiles(new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".txt");
+            }
+        });
+        return textFiles;
     }
 
     private static synchronized void incrementUsedCount(String answer) {
