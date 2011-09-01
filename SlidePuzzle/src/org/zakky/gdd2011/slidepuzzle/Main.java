@@ -120,7 +120,8 @@ public class Main {
                         answer = candidate;
                     }
                 }
-                System.out.println((questionIndex + 1) + ":" + answer);
+                incrementUsedCount(answer);
+                System.out.println(found__ + "/" + (questionIndex + 1) + ":" + answer);
                 it.remove();
             }
         }
