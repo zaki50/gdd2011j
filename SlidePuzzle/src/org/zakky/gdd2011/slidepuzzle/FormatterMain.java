@@ -38,7 +38,6 @@ public class FormatterMain {
                     continue;
                 }
                 final String[] split = line.split(":");
-                // 問題番号(1-base)
                 if (split.length < 2) {
                     continue;
                 }
@@ -47,6 +46,7 @@ public class FormatterMain {
                     continue;
                 }
 
+                // 問題番号(1-base)
                 final int questionNumber = getQuestionNumber(split[0]);
                 answers.set(questionNumber - 1, answer);
             }
@@ -100,7 +100,7 @@ public class FormatterMain {
         System.out.println(label + ": " + count + "/" + limit + "(rest " + (limit - count) + ")");
     }
 
-    private static int getQuestionNumber(String header) {
+    static int getQuestionNumber(String header) {
         final String numStr;
 
         final int braseIndex = header.indexOf('(');
