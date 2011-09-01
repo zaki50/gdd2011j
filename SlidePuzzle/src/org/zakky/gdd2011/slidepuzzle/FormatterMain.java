@@ -11,11 +11,20 @@ public class FormatterMain {
 
     public static void main(String[] args) throws Exception {
         final List<String> answers;
+        final int leftLimit;
+        final int rightLimit;
+        final int upLimit;
+        final int downLimit;
 
-        final String input = (args.length == 0) ? "./answers/answer2.txt" : args[0];
+        final String input = (args.length == 0) ? "./answers/answer3.txt" : args[0];
         final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(
                 input), "iso8859-1"));
         try {
+            final String[] limits = reader.readLine().split(" ");
+            leftLimit = Integer.parseInt(limits[0]);
+            rightLimit = Integer.parseInt(limits[1]);
+            upLimit = Integer.parseInt(limits[2]);
+            downLimit = Integer.parseInt(limits[3]);
             final int questionsCount = Integer.parseInt(reader.readLine());
 
             answers = new ArrayList<String>(questionsCount);
@@ -45,6 +54,39 @@ public class FormatterMain {
             reader.close();
         }
 
+        // 制限を超えていないことを確認
+        int leftCount = 0;
+        int rightCount = 0;
+        int upCount = 0;
+        int downCount = 0;
+        for (String answer : answers) {
+            if (answer == null) {
+                continue;
+            }
+            for (char c : answer.toCharArray()) {
+                switch (c) {
+                    case 'U':
+                        upCount++;
+                        break;
+                    case 'D':
+                        downCount++;
+                        break;
+                    case 'L':
+                        leftCount++;
+                        break;
+                    case 'R':
+                        rightCount++;
+                        break;
+                }
+            }
+        }
+
+        printLimit("left", leftLimit, leftCount);
+        printLimit("right", rightLimit, rightCount);
+        printLimit("up", upLimit, upCount);
+        printLimit("down", downLimit, downCount);
+        System.out.println("↓ここから解答");
+
         for (String answer : answers) {
             if (answer == null) {
                 System.out.println();
@@ -52,6 +94,10 @@ public class FormatterMain {
                 System.out.println(answer);
             }
         }
+    }
+
+    private static void printLimit(String label, int limit, int count) {
+        System.out.println(label + ": " + count + "/" + limit + "(rest " + (limit - count) + ")");
     }
 
     private static int getQuestionNumber(String header) {

@@ -7,9 +7,6 @@ import org.zakky.gdd2011.slidepuzzle.solver.IddfsSolver;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-
-import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
-import org.zakky.gdd2011.slidepuzzle.solver.IddfsSolver;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -59,6 +56,8 @@ public class Main {
         }
 
         Direction.setSeed(100L);
+
+        System.out.println(leftLimit + " " + rightLimit + " " + upLimit + " " + downLimit);
 
         for (int i = 0; i < THREAD_COUNT; i++) {
             final int threadId = i;
