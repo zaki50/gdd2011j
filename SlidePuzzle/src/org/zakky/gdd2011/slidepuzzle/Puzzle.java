@@ -58,6 +58,8 @@ public class Puzzle implements Cloneable {
         }
     }
 
+    private final int id_;
+
     private final byte[] board_;
 
     private final int width_;
@@ -68,7 +70,8 @@ public class Puzzle implements Cloneable {
 
     private final StringBuilder history_;
 
-    public Puzzle(String line) {
+    public Puzzle(int id, String line) {
+        id_ = id;
         final String[] split = line.split(",");
         assert split.length == 3;
         width_ = Integer.parseInt(split[0]);
@@ -92,13 +95,18 @@ public class Puzzle implements Cloneable {
         history_ = new StringBuilder();
     }
 
-    public Puzzle(int width, int height, byte[] board, int zeroIndex, StringBuilder history) {
+    public Puzzle(int id, int width, int height, byte[] board, int zeroIndex, StringBuilder history) {
         super();
+        id_ = id;
         width_ = width;
         height_ = height;
         board_ = board;
         zeroIndex_ = zeroIndex;
         history_ = history;
+    }
+
+    public int getId() {
+        return id_;
     }
 
     public int getWidth() {
@@ -180,7 +188,7 @@ public class Puzzle implements Cloneable {
         final byte[] board = board_.clone();
         board[zeroIndex_] = board[nextIndex];
         board[nextIndex] = '0';
-        return new Puzzle(width_, height_, board, nextIndex, new StringBuilder(history_.toString()
+        return new Puzzle(id_, width_, height_, board, nextIndex, new StringBuilder(history_.toString()
                 + dir.getLetter()));
     }
 
@@ -219,7 +227,7 @@ public class Puzzle implements Cloneable {
 
     @Override
     public Puzzle clone() {
-        final Puzzle clone = new Puzzle(width_, height_, board_.clone(), zeroIndex_,
+        final Puzzle clone = new Puzzle(id_, width_, height_, board_.clone(), zeroIndex_,
                 new StringBuilder(history_));
         return clone;
     }

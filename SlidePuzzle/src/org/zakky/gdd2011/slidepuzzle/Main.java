@@ -1,12 +1,18 @@
 
 package org.zakky.gdd2011.slidepuzzle;
 
+import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
+import org.zakky.gdd2011.slidepuzzle.solver.IddfsSolver;
+
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 
 import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
 import org.zakky.gdd2011.slidepuzzle.solver.IddfsSolver;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 
 public class Main {
 
@@ -17,6 +23,10 @@ public class Main {
     private static int upUsed__ = 0;
 
     private static int downUsed__ = 0;
+    
+    private static int found__ = 0;
+    
+    private static final int THREAD_COUNT = 8;
 
     final public static void main(String[] args) throws Exception {
         final String input = (args.length == 0) ? "./input.txt" : args[0];
@@ -32,28 +42,48 @@ public class Main {
 
             Direction.setSeed(100L);
 
-            int found = 0;
+            final BlockingQueue<Puzzle> queue = new LinkedBlockingDeque<Puzzle>(lineCount);
             for (int i = 0; i < lineCount; i++) {
                 final String line = reader.readLine();
-                final Puzzle puzzle = new Puzzle(line);
+                final Puzzle puzzle = new Puzzle(i, line);
+                queue.offer(puzzle);
+            }
 
-                final IddfsSolver solver = new IddfsSolver(puzzle, leftLimit - leftUsed__,
-                        rightLimit - rightUsed__, upLimit - upUsed__, downLimit - downUsed__);
-                final String answer = solver.solve();
-                if (answer == null) {
-                    System.out.println(found + "/" + (i + 1) + ":");
-                } else {
-                    incrementUsedCount(answer);
-                    found++;
-                    System.out.println(found + "/" + (i + 1) + ":" + answer);
-                }
+            for (int i=0;i<THREAD_COUNT;i++) {
+                final int threadId = i;
+                new Thread("iddfs-solver-" + threadId) {
+                    @Override
+                    public void run() {
+                        try {
+                            for (Puzzle puzzle = queue.poll(1000L, TimeUnit.MILLISECONDS); puzzle != null; puzzle = queue
+                                    .poll(1000L, TimeUnit.MILLISECONDS)) {
+                                final int i = puzzle.getId();
+                                Thread.currentThread().setName("iddfs-solver-" + threadId + "-" + i);
+                                final IddfsSolver solver = new IddfsSolver(puzzle, leftLimit
+                                        - leftUsed__, rightLimit - rightUsed__, upLimit - upUsed__,
+                                        downLimit - downUsed__);
+                                final String answer = solver.solve();
+                                if (answer == null) {
+                                    System.out.println(found__ + "/" + (i + 1) + ":");
+                                } else {
+                                    incrementUsedCount(answer);
+                                    System.out.println(found__ + "/" + (i + 1) + "("
+                                            + answer.length() + " steps):" + answer);
+                                }
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }.start();
             }
         } finally {
             reader.close();
         }
     }
 
-    private static void incrementUsedCount(String answer) {
+    private static synchronized void incrementUsedCount(String answer) {
+        found__++;
         final char[] array = answer.toCharArray();
         for (int i = 0; i < array.length; i++) {
             final char letter = array[i];

@@ -53,8 +53,8 @@ public class SolverUtilTest {
 
     @Test
     public void testCalcManhattanDistanceSum() {
-        assertEquals(0, calcManhattanDistanceSum(new Puzzle("3,3,123456780")));
-        assertEquals(16, calcManhattanDistanceSum(new Puzzle("3,3,012345678")));
+        assertEquals(0, calcManhattanDistanceSum(new Puzzle(0, "3,3,123456780")));
+        assertEquals(16, calcManhattanDistanceSum(new Puzzle(0, "3,3,012345678")));
     }
 
 }

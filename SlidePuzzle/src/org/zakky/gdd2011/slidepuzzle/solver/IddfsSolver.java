@@ -7,7 +7,7 @@ import org.zakky.gdd2011.slidepuzzle.SlidePuzzleSolver;
 
 public final class IddfsSolver implements SlidePuzzleSolver {
 
-    private static final int STEP_LIMIT = 52;
+    private static final int STEP_LIMIT = 54;
 
     private final Puzzle initial_;
 
@@ -61,13 +61,20 @@ public final class IddfsSolver implements SlidePuzzleSolver {
             if (next.isCleared()) {
                 return next.getHistory();
             }
-            if (stepLimit < SolverUtil.calcManhattanDistanceSum(next)) {
-                /*
-                 * 1step で md は2減る可能性があるので stepLimit * 2 と比較する必要があるが、
-                 * それだと枝刈りが少なくて時間がかかりすぎるのでとりあえず2倍せずに刈ってみる
-                 */
-                continue;
+            
+            final int mdSum = SolverUtil.calcManhattanDistanceSum(next);
+            if (mdSum <= 4) {
+                // 最後のほうは正確に
+                if ((stepLimit * 2) < mdSum) {
+                    continue;
+                }
+            } else {
+                // ゴールが遠いうちは多めに狩る
+                if (stepLimit < mdSum) {
+                    continue;
+                }
             }
+            
             final String result = search(next, stepLimit);
             if (result != null) {
                 return result;
