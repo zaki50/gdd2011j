@@ -100,6 +100,7 @@ public class Main {
         }
 
         System.out.println(leftLimit + " " + rightLimit + " " + upLimit + " " + downLimit);
+        System.out.println(questionCount);
 
         // 既に解が分かっているものは queue から取り除く
         final Iterator<SolvingState> it = queue.iterator();
