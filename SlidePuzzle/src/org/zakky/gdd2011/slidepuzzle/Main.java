@@ -42,11 +42,12 @@ public class Main {
 
             Direction.setSeed(100L);
 
-            final BlockingQueue<Puzzle> queue = new LinkedBlockingDeque<Puzzle>(lineCount);
+            final BlockingQueue<SolvingState> queue = new LinkedBlockingDeque<SolvingState>(lineCount);
             for (int i = 0; i < lineCount; i++) {
                 final String line = reader.readLine();
                 final Puzzle puzzle = new Puzzle(i, line);
-                queue.offer(puzzle);
+                final SolvingState state = new SolvingState(puzzle, 0);
+                queue.offer(state);
             }
 
             for (int i=0;i<THREAD_COUNT;i++) {
@@ -55,19 +56,24 @@ public class Main {
                     @Override
                     public void run() {
                         try {
-                            for (Puzzle puzzle = queue.poll(1000L, TimeUnit.MILLISECONDS); puzzle != null; puzzle = queue
+                            for (SolvingState state = queue.poll(1000L, TimeUnit.MILLISECONDS); state != null; state = queue
                                     .poll(1000L, TimeUnit.MILLISECONDS)) {
-                                final int i = puzzle.getId();
-                                Thread.currentThread().setName("iddfs-solver-" + threadId + "-" + i);
-                                final IddfsSolver solver = new IddfsSolver(puzzle, leftLimit
-                                        - leftUsed__, rightLimit - rightUsed__, upLimit - upUsed__,
-                                        downLimit - downUsed__);
+                                final Puzzle puzzle = state.getTarget();
+                                final int stepsLimit = state.getSearchedDepth() + 1;
+                                final int id = puzzle.getId();
+                                Thread.currentThread().setName(
+                                        "iddfs-solver-" + threadId + "-p" + id + "-d" + stepsLimit);
+                                final IddfsSolver solver = new IddfsSolver(puzzle, stepsLimit,
+                                        leftLimit - leftUsed__, rightLimit - rightUsed__, upLimit
+                                                - upUsed__, downLimit - downUsed__);
                                 final String answer = solver.solve();
                                 if (answer == null) {
-                                    System.out.println(found__ + "/" + (i + 1) + ":");
+                                    // 見つからなかったので、探索済みステップ数を更新した新しいステートをoffer
+                                    final SolvingState newState = new SolvingState(puzzle, stepsLimit);
+                                    queue.offer(newState);
                                 } else {
                                     incrementUsedCount(answer);
-                                    System.out.println(found__ + "/" + (i + 1) + "("
+                                    System.out.println(found__ + "/" + (id + 1) + "("
                                             + answer.length() + " steps):" + answer);
                                 }
                             }

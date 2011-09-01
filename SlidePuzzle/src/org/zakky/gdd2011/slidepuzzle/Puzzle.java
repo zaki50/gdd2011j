@@ -192,20 +192,6 @@ public class Puzzle implements Cloneable {
                 + dir.getLetter()));
     }
 
-    public boolean move2(Direction dir) {
-        final int nextIndex = getNextIndex(zeroIndex_, dir);
-        if (nextIndex < 0) {
-            return false;
-        }
-        if (board_[nextIndex] == '=') {
-            return false;
-        }
-        board_[zeroIndex_] = board_[nextIndex];
-        board_[nextIndex] = '0';
-        history_.append(dir.getLetter());
-        return true;
-    }
-
     private static final char[] A = {
             '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H',
             'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y',
