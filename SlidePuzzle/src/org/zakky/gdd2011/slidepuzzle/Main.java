@@ -23,68 +23,75 @@ public class Main {
     private static int upUsed__ = 0;
 
     private static int downUsed__ = 0;
-    
+
     private static int found__ = 0;
-    
+
     private static final int THREAD_COUNT = 8;
 
     final public static void main(String[] args) throws Exception {
+
+        final BlockingQueue<SolvingState> queue;
+        final int leftLimit;
+        final int rightLimit;
+        final int upLimit;
+        final int downLimit;
+
         final String input = (args.length == 0) ? "./input.txt" : args[0];
         final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(
                 input), "iso8859-1"));
         try {
             final String[] limits = reader.readLine().split(" ");
-            final int leftLimit = Integer.parseInt(limits[0]);
-            final int rightLimit = Integer.parseInt(limits[1]);
-            final int upLimit = Integer.parseInt(limits[2]);
-            final int downLimit = Integer.parseInt(limits[3]);
+            leftLimit = Integer.parseInt(limits[0]);
+            rightLimit = Integer.parseInt(limits[1]);
+            upLimit = Integer.parseInt(limits[2]);
+            downLimit = Integer.parseInt(limits[3]);
             final int lineCount = Integer.parseInt(reader.readLine());
 
-            Direction.setSeed(100L);
-
-            final BlockingQueue<SolvingState> queue = new LinkedBlockingDeque<SolvingState>(lineCount);
+            queue = new LinkedBlockingDeque<SolvingState>(lineCount);
             for (int i = 0; i < lineCount; i++) {
                 final String line = reader.readLine();
                 final Puzzle puzzle = new Puzzle(i, line);
                 final SolvingState state = new SolvingState(puzzle, 0);
                 queue.offer(state);
             }
-
-            for (int i=0;i<THREAD_COUNT;i++) {
-                final int threadId = i;
-                new Thread("iddfs-solver-" + threadId) {
-                    @Override
-                    public void run() {
-                        try {
-                            for (SolvingState state = queue.poll(1000L, TimeUnit.MILLISECONDS); state != null; state = queue
-                                    .poll(1000L, TimeUnit.MILLISECONDS)) {
-                                final Puzzle puzzle = state.getTarget();
-                                final int stepsLimit = state.getSearchedDepth() + 1;
-                                final int id = puzzle.getId();
-                                Thread.currentThread().setName(
-                                        "iddfs-solver-" + threadId + "-p" + id + "-d" + stepsLimit);
-                                final IddfsSolver solver = new IddfsSolver(puzzle, stepsLimit,
-                                        leftLimit - leftUsed__, rightLimit - rightUsed__, upLimit
-                                                - upUsed__, downLimit - downUsed__);
-                                final String answer = solver.solve();
-                                if (answer == null) {
-                                    // 見つからなかったので、探索済みステップ数を更新した新しいステートをoffer
-                                    final SolvingState newState = new SolvingState(puzzle, stepsLimit);
-                                    queue.offer(newState);
-                                } else {
-                                    incrementUsedCount(answer);
-                                    System.out.println(found__ + "/" + (id + 1) + "("
-                                            + answer.length() + " steps):" + answer);
-                                }
-                            }
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }.start();
-            }
         } finally {
             reader.close();
+        }
+
+        Direction.setSeed(100L);
+
+        for (int i = 0; i < THREAD_COUNT; i++) {
+            final int threadId = i;
+            new Thread("iddfs-solver-" + threadId) {
+                @Override
+                public void run() {
+                    try {
+                        for (SolvingState state = queue.poll(1000L, TimeUnit.MILLISECONDS); state != null; state = queue
+                                .poll(1000L, TimeUnit.MILLISECONDS)) {
+                            final Puzzle puzzle = state.getTarget();
+                            final int stepsLimit = state.getSearchedDepth() + 1;
+                            final int id = puzzle.getId();
+                            Thread.currentThread().setName(
+                                    "iddfs-solver-" + threadId + "-p" + id + "-d" + stepsLimit);
+                            final IddfsSolver solver = new IddfsSolver(puzzle, stepsLimit,
+                                    leftLimit - leftUsed__, rightLimit - rightUsed__, upLimit
+                                            - upUsed__, downLimit - downUsed__);
+                            final String answer = solver.solve();
+                            if (answer == null) {
+                                // 見つからなかったので、探索済みステップ数を更新した新しいステートをoffer
+                                final SolvingState newState = new SolvingState(puzzle, stepsLimit);
+                                queue.offer(newState);
+                            } else {
+                                incrementUsedCount(answer);
+                                System.out.println(found__ + "/" + (id + 1) + "(" + answer.length()
+                                        + " steps):" + answer);
+                            }
+                        }
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
         }
     }
 
