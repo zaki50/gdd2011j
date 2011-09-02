@@ -98,7 +98,7 @@ public class Puzzle implements Cloneable {
         int zeroIndex = -1;
         for (int i = 0; i < size; i++) {
             final char panel = panels.charAt(i);
-            assert ('0' <= panel && panel <= '9') || panel == '=';
+            assert ('0' <= panel && panel <= '9') || ('A' <= panel && panel <= 'Z') || panel == '=';
             board_[i] = (byte) panel;
             if (panel == '0') {
                 zeroIndex = i;
@@ -141,6 +141,14 @@ public class Puzzle implements Cloneable {
             throw new ArrayIndexOutOfBoundsException("out of bounds: y(" + y + ")");
         }
         final int index = toIndex(x, y);
+        final byte result = board_[index];
+        return (char) result;
+    }
+
+    public char getAt(int index) {
+        if (index < 0 || board_.length <= index) {
+            throw new ArrayIndexOutOfBoundsException("out of bounds: index(" + index + ")");
+        }
         final byte result = board_[index];
         return (char) result;
     }
@@ -233,13 +241,13 @@ public class Puzzle implements Cloneable {
         return clone;
     }
 
-    private int toIndex(int x, int y) {
+    public int toIndex(int x, int y) {
         assert 0 <= x && x < width_ && 0 <= y && y < height_;
         final int index = x + y * width_;
         return index;
     }
 
-    private int getNextIndex(int fromIndex, Direction dir) {
+    public int getNextIndex(int fromIndex, Direction dir) {
         switch (dir) {
             case UP: {
                 final int index = fromIndex - width_;

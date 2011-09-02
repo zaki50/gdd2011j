@@ -3,6 +3,7 @@ package org.zakky.gdd2011.slidepuzzle;
 
 import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
 import org.zakky.gdd2011.slidepuzzle.solver.IddfsSolver;
+import org.zakky.gdd2011.slidepuzzle.solver.SolverUtil;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -10,7 +11,6 @@ import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -55,7 +55,8 @@ public class Main {
                 for (int i = 0; i < questionCount; i++) {
                     final String line = reader.readLine();
                     final Puzzle puzzle = new Puzzle(i, line);
-                    final SolvingState state = new SolvingState(puzzle, 0);
+                    final List<List<Integer>> distanceTable = SolverUtil.buildDistanceTable(puzzle);
+                    final SolvingState state = new SolvingState(puzzle, distanceTable, 0);
                     queue.offer(state);
                 }
             } finally {
@@ -137,17 +138,18 @@ public class Main {
                         for (SolvingState state = queue.poll(1000L, TimeUnit.MILLISECONDS); state != null; state = queue
                                 .poll(1000L, TimeUnit.MILLISECONDS)) {
                             final Puzzle puzzle = state.getTarget();
+                            final List<List<Integer>> distanceTable = state.getDistanceTable_();
                             final int stepsLimit = state.getSearchedDepth() + 1;
                             final int id = puzzle.getId();
                             Thread.currentThread().setName(
                                     "iddfs-solver-" + threadId + "-p" + id + "-d" + stepsLimit);
-                            final IddfsSolver solver = new IddfsSolver(puzzle, stepsLimit,
-                                    leftLimit - leftUsed__, rightLimit - rightUsed__, upLimit
-                                            - upUsed__, downLimit - downUsed__);
+                            final IddfsSolver solver = new IddfsSolver(puzzle, distanceTable,
+                                    stepsLimit);
                             final String answer = solver.solve();
                             if (answer == null) {
                                 // 見つからなかったので、探索済みステップ数を更新した新しいステートをoffer
-                                final SolvingState newState = new SolvingState(puzzle, stepsLimit);
+                                final SolvingState newState = new SolvingState(puzzle,
+                                        distanceTable, stepsLimit);
                                 queue.offer(newState);
                             } else {
                                 incrementUsedCount(answer);

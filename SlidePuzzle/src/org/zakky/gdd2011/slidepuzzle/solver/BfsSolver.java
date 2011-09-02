@@ -12,22 +12,9 @@ public class BfsSolver implements SlidePuzzleSolver {
 
     private final Puzzle initial_;
 
-    private final int leftLimit_;
-
-    private final int rightLimit_;
-
-    private final int upLimit_;
-
-    private final int downLimit_;
-
-    public BfsSolver(Puzzle puzzle, int leftLimit, int rightLimit, int upLimit,
-            int downLimit) {
+    public BfsSolver(Puzzle puzzle) {
         super();
         initial_ = puzzle;
-        leftLimit_ = leftLimit;
-        rightLimit_ = rightLimit;
-        upLimit_ = upLimit;
-        downLimit_ = downLimit;
     }
 
     @Override
