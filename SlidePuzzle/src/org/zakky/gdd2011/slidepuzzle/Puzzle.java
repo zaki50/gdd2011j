@@ -15,6 +15,22 @@ public class Puzzle implements Cloneable {
             RAND.setSeed(seed);
         }
 
+        public static Direction fromLetter(char c) {
+            if (c == UP.getLetter()) {
+                return UP;
+            }
+            if (c == DOWN.getLetter()) {
+                return DOWN;
+            }
+            if (c == LEFT.getLetter()) {
+                return LEFT;
+            }
+            if (c == RIGHT.getLetter()) {
+                return RIGHT;
+            }
+            throw new IllegalArgumentException("unknown letter: " + c);
+        }
+
         Direction(char letter) {
             letter_ = letter;
         }
@@ -68,7 +84,7 @@ public class Puzzle implements Cloneable {
 
     private final int zeroIndex_;
 
-    private final StringBuilder history_;
+    private final String history_;
 
     public Puzzle(int id, String line) {
         id_ = id;
@@ -92,10 +108,10 @@ public class Puzzle implements Cloneable {
             throw new RuntimeException("'0' not found.");
         }
         zeroIndex_ = zeroIndex;
-        history_ = new StringBuilder();
+        history_ = "";
     }
 
-    public Puzzle(int id, int width, int height, byte[] board, int zeroIndex, StringBuilder history) {
+    public Puzzle(int id, int width, int height, byte[] board, int zeroIndex, String history) {
         super();
         id_ = id;
         width_ = width;
@@ -188,8 +204,8 @@ public class Puzzle implements Cloneable {
         final byte[] board = board_.clone();
         board[zeroIndex_] = board[nextIndex];
         board[nextIndex] = '0';
-        return new Puzzle(id_, width_, height_, board, nextIndex, new StringBuilder(
-                history_.toString() + dir.getLetter()));
+        return new Puzzle(id_, width_, height_, board, nextIndex, history_.toString()
+                + dir.getLetter());
     }
 
     private static final char[] A = {
@@ -213,8 +229,7 @@ public class Puzzle implements Cloneable {
 
     @Override
     public Puzzle clone() {
-        final Puzzle clone = new Puzzle(id_, width_, height_, board_.clone(), zeroIndex_,
-                new StringBuilder(history_));
+        final Puzzle clone = new Puzzle(id_, width_, height_, board_.clone(), zeroIndex_, history_);
         return clone;
     }
 
@@ -265,12 +280,30 @@ public class Puzzle implements Cloneable {
         final StringBuilder sb = new StringBuilder();
         for (int y = 0; y < height_; y++) {
             for (int x = 0; x < width_; x++) {
-                final char ch = getAt(x, y);
-                if (ch=='0') {
-                    sb.append(' ');
-                } else {
-                    sb.append(ch);
+                char ch = getAt(x, y);
+                if (ch == '0') {
+                    if (history_.isEmpty()) {
+                        ch = ' ';
+                    } else {
+                        final Direction lastMove = Direction.fromLetter(//
+                                history_.charAt(history_.length() - 1));
+                        switch (lastMove) {
+                            case UP:
+                                ch = '^';
+                                break;
+                            case DOWN:
+                                ch = '_';
+                                break;
+                            case LEFT:
+                                ch = '<';
+                                break;
+                            case RIGHT:
+                                ch = '>';
+                                break;
+                        }
+                    }
                 }
+                sb.append(ch);
             }
             sb.append(newLine);
         }
