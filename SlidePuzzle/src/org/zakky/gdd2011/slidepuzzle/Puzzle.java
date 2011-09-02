@@ -188,8 +188,8 @@ public class Puzzle implements Cloneable {
         final byte[] board = board_.clone();
         board[zeroIndex_] = board[nextIndex];
         board[nextIndex] = '0';
-        return new Puzzle(id_, width_, height_, board, nextIndex, new StringBuilder(history_.toString()
-                + dir.getLetter()));
+        return new Puzzle(id_, width_, height_, board, nextIndex, new StringBuilder(
+                history_.toString() + dir.getLetter()));
     }
 
     private static final char[] A = {
@@ -258,4 +258,23 @@ public class Puzzle implements Cloneable {
                 return -1;
         }
     }
+
+    @Override
+    public String toString() {
+        final String newLine = System.getProperty("line.separator");
+        final StringBuilder sb = new StringBuilder();
+        for (int y = 0; y < height_; y++) {
+            for (int x = 0; x < width_; x++) {
+                final char ch = getAt(x, y);
+                if (ch=='0') {
+                    sb.append(' ');
+                } else {
+                    sb.append(ch);
+                }
+            }
+            sb.append(newLine);
+        }
+        return sb.toString();
+    }
+
 }
