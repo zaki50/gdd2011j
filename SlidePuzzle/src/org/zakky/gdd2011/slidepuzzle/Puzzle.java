@@ -264,7 +264,7 @@ public class Puzzle implements Cloneable {
                 return index;
             }
             case LEFT: {
-                if (zeroIndex_ % width_ == 0) {
+                if (fromIndex % width_ == 0) {
                     return -1;
                 }
                 final int index = fromIndex - 1;
