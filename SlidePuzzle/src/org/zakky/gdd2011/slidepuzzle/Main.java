@@ -19,12 +19,16 @@ import java.util.concurrent.TimeUnit;
 
 public class Main {
 
+    @SuppressWarnings("unused")
     private static int leftUsed__ = 0;
 
+    @SuppressWarnings("unused")
     private static int rightUsed__ = 0;
 
+    @SuppressWarnings("unused")
     private static int upUsed__ = 0;
 
+    @SuppressWarnings("unused")
     private static int downUsed__ = 0;
 
     private static int found__ = 0;
@@ -122,8 +126,7 @@ public class Main {
                         answer = candidate;
                     }
                 }
-                incrementUsedCount(answer);
-                System.out.println(found__ + "/" + (questionIndex + 1) + ":" + answer);
+                incrementUsedCount(questionIndex, answer);
                 it.remove();
             }
         }
@@ -153,9 +156,7 @@ public class Main {
                                         distanceTable, stepsLimit);
                                 queue.offer(newState);
                             } else {
-                                incrementUsedCount(answer);
-                                System.out.println(found__ + "/" + (id + 1) + "(" + answer.length()
-                                        + " steps):" + answer);
+                                incrementUsedCount(id, answer);
                             }
                         }
                     } catch (InterruptedException e) {
@@ -180,7 +181,7 @@ public class Main {
         return textFiles;
     }
 
-    private static synchronized void incrementUsedCount(String answer) {
+    private static synchronized void incrementUsedCount(int id, String answer) {
         found__++;
         final char[] array = answer.toCharArray();
         for (int i = 0; i < array.length; i++) {
@@ -195,5 +196,6 @@ public class Main {
                 rightUsed__++;
             }
         }
+        System.out.println(found__ + "/" + (id + 1) + "(" + answer.length() + " steps):" + answer);
     }
 }
