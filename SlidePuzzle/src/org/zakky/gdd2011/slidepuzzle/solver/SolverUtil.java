@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public final class SolverUtil {
-    static int calcManhattanDistanceSum(Puzzle p) {
+    static int calcManhattanDistanceSum(Puzzle p, boolean includeZero) {
         final int width = p.getWidth();
         final int height = p.getHeight();
 
@@ -23,6 +23,9 @@ public final class SolverUtil {
                 }
                 final int value;
                 if (c == '0') {
+                    if (!includeZero) {
+                        continue;
+                    }
                     value = (width * height) - 1;
                 } else if ('1' <= c && c <= '9') {
                     value = c - '1';
@@ -45,7 +48,7 @@ public final class SolverUtil {
         return md;
     }
 
-    static int calcDistanceSum(Puzzle p, List<List<Integer>> table) {
+    static int calcDistanceSum(Puzzle p, List<List<Integer>> table, boolean includeZero) {
         final int width = p.getWidth();
         final int height = p.getHeight();
 
@@ -59,6 +62,9 @@ public final class SolverUtil {
                 }
                 final int value;
                 if (c == '0') {
+                    if (!includeZero) {
+                        continue;
+                    }
                     value = (width * height) - 1;
                 } else if ('1' <= c && c <= '9') {
                     value = c - '1';

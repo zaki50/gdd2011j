@@ -1,10 +1,6 @@
 
 package org.zakky.gdd2011.slidepuzzle;
 
-import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
-import org.zakky.gdd2011.slidepuzzle.solver.IddfsSolver;
-import org.zakky.gdd2011.slidepuzzle.solver.SolverUtil;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,6 +12,10 @@ import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
+
+import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
+import org.zakky.gdd2011.slidepuzzle.solver.IddfsSolver;
+import org.zakky.gdd2011.slidepuzzle.solver.SolverUtil;
 
 public class Main {
 
@@ -126,7 +126,7 @@ public class Main {
                         answer = candidate;
                     }
                 }
-                incrementUsedCount(questionIndex, answer);
+                incrementUsedCount(questionIndex, answer, state.getTarget());
                 it.remove();
             }
         }
@@ -156,7 +156,7 @@ public class Main {
                                         distanceTable, stepsLimit);
                                 queue.offer(newState);
                             } else {
-                                incrementUsedCount(id, answer);
+                                incrementUsedCount(id, answer, puzzle);
                             }
                         }
                     } catch (InterruptedException e) {
@@ -181,7 +181,7 @@ public class Main {
         return textFiles;
     }
 
-    private static synchronized void incrementUsedCount(int id, String answer) {
+    private static synchronized void incrementUsedCount(int id, String answer, Puzzle puzzle) {
         found__++;
         final char[] array = answer.toCharArray();
         for (int i = 0; i < array.length; i++) {
@@ -197,5 +197,6 @@ public class Main {
             }
         }
         System.out.println(found__ + "/" + (id + 1) + "(" + answer.length() + " steps):" + answer);
+        //System.out.println(puzzle.toString());
     }
 }
