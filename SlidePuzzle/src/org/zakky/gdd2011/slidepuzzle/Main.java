@@ -4,8 +4,11 @@ package org.zakky.gdd2011.slidepuzzle;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -16,6 +19,8 @@ import java.util.concurrent.TimeUnit;
 import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
 import org.zakky.gdd2011.slidepuzzle.solver.IddfsSolver;
 import org.zakky.gdd2011.slidepuzzle.solver.SolverUtil;
+
+import apple.laf.JRSUIConstants.Size;
 
 public class Main {
 
@@ -70,45 +75,7 @@ public class Main {
         }
 
         final List<List<String>> knownAnswers = new ArrayList<List<String>>(questionCount);
-        {
-            for (int i = 0; i < questionCount; i++) {
-                knownAnswers.add(new ArrayList<String>());
-            }
-
-            final File[] answerFiles = getTextFiles("./answers");
-            for (File input : answerFiles) {
-
-                final BufferedReader reader = new BufferedReader(new InputStreamReader(
-                        new FileInputStream(input), "iso8859-1"));
-                try {
-                    final String[] limits = reader.readLine().split(" ");
-                    /* leftLimit = */Integer.parseInt(limits[0]);
-                    /* rightLimit = */Integer.parseInt(limits[1]);
-                    /* upLimit = */Integer.parseInt(limits[2]);
-                    /* downLimit = */Integer.parseInt(limits[3]);
-                    /* final int lineCount = */Integer.parseInt(reader.readLine());
-
-                    for (String line = reader.readLine(); line != null; line = reader.readLine()) {
-                        final String[] split = line.split(":");
-                        if (split.length < 2) {
-                            continue;
-                        }
-                        final String answer = split[1];
-                        if (answer.trim().isEmpty()) {
-                            continue;
-                        }
-
-                        // 問題番号(1-base)
-                        final int questionNumber = FormatterMain.getQuestionNumber(split[0]);
-                        final List<String> answers = knownAnswers.get(questionNumber - 1);
-                        answers.add(answer);
-                    }
-
-                } finally {
-                    reader.close();
-                }
-            }
-        }
+        //readAnswers(questionCount, knownAnswers);
 
         System.out.println(leftLimit + " " + rightLimit + " " + upLimit + " " + downLimit);
         System.out.println(questionCount);
@@ -118,7 +85,7 @@ public class Main {
         while (it.hasNext()) {
             final SolvingState state = it.next();
             final int questionIndex = state.getTarget().getId();
-            if (!knownAnswers.get(questionIndex).isEmpty()) {
+            if (questionIndex < knownAnswers.size() && !knownAnswers.get(questionIndex).isEmpty()) {
                 // find shortest
                 String answer = "";
                 for (String candidate : knownAnswers.get(questionIndex)) {
@@ -164,6 +131,46 @@ public class Main {
                     }
                 }
             }.start();
+        }
+    }
+
+    private static void readAnswers(final int questionCount, final List<List<String>> knownAnswers)
+            throws UnsupportedEncodingException, FileNotFoundException, IOException {
+        for (int i = 0; i < questionCount; i++) {
+            knownAnswers.add(new ArrayList<String>());
+        }
+
+        final File[] answerFiles = getTextFiles("./answers");
+        for (File input : answerFiles) {
+
+            final BufferedReader reader = new BufferedReader(new InputStreamReader(
+                    new FileInputStream(input), "iso8859-1"));
+            try {
+                final String[] limits = reader.readLine().split(" ");
+                /* leftLimit = */Integer.parseInt(limits[0]);
+                /* rightLimit = */Integer.parseInt(limits[1]);
+                /* upLimit = */Integer.parseInt(limits[2]);
+                /* downLimit = */Integer.parseInt(limits[3]);
+                /* final int lineCount = */Integer.parseInt(reader.readLine());
+
+                for (String line = reader.readLine(); line != null; line = reader.readLine()) {
+                    final String[] split = line.split(":");
+                    if (split.length < 2) {
+                        continue;
+                    }
+                    final String answer = split[1];
+                    if (answer.trim().isEmpty()) {
+                        continue;
+                    }
+
+                    // 問題番号(1-base)
+                    final int questionNumber = FormatterMain.getQuestionNumber(split[0]);
+                    final List<String> answers = knownAnswers.get(questionNumber - 1);
+                    answers.add(answer);
+                }
+            } finally {
+                reader.close();
+            }
         }
     }
 
