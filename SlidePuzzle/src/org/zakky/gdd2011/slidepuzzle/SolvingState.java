@@ -1,16 +1,14 @@
 
 package org.zakky.gdd2011.slidepuzzle;
 
-import java.util.List;
-
 public class SolvingState {
     private final Puzzle target_;
 
     private final int searchedDepth_;
 
-    private final List<List<Integer>> distanceTable_;
+    private final int[][] distanceTable_;
 
-    public SolvingState(Puzzle target, List<List<Integer>> distanceTable, int searchedDepth) {
+    public SolvingState(Puzzle target, int[][] distanceTable, int searchedDepth) {
         super();
         target_ = target;
         distanceTable_ = distanceTable;
@@ -25,7 +23,7 @@ public class SolvingState {
         return searchedDepth_;
     }
 
-    public List<List<Integer>> getDistanceTable_() {
+    public int[][] getDistanceTable() {
         return distanceTable_;
     }
 }

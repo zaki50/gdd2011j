@@ -5,17 +5,15 @@ import org.zakky.gdd2011.slidepuzzle.Puzzle;
 import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
 import org.zakky.gdd2011.slidepuzzle.SlidePuzzleSolver;
 
-import java.util.List;
-
 public final class IddfsSolver implements SlidePuzzleSolver {
 
     private final int stepLimit_;
 
     private final Puzzle initial_;
 
-    private final List<List<Integer>> distanceTable_;
+    private final int[][] distanceTable_;
 
-    public IddfsSolver(Puzzle puzzle, List<List<Integer>> distanceTable, int stepLimit) {
+    public IddfsSolver(Puzzle puzzle, int[][] distanceTable, int stepLimit) {
         super();
         initial_ = puzzle;
         stepLimit_ = stepLimit;
@@ -53,7 +51,7 @@ public final class IddfsSolver implements SlidePuzzleSolver {
                 return next.getHistory();
             }
 
-            final int dSum = getDistanceSum(next, distanceTable_, false);
+            final int dSum = getDistanceSum(next, distanceTable_);
             if (stepLimit < dSum) {
                 continue;
             }
@@ -66,10 +64,9 @@ public final class IddfsSolver implements SlidePuzzleSolver {
         return null;
     }
 
-    private static int getDistanceSum(Puzzle p, List<List<Integer>> distanceTable,
-            boolean includeZero) {
-        final int dSum = SolverUtil.calcDistanceSum(p, distanceTable, includeZero);
-        //final int dSum = SolverUtil.calcManhattanDistanceSum(p, includeZero);
+    private static int getDistanceSum(Puzzle p, int[][] distanceTable) {
+        final int dSum = SolverUtil.calcDistanceSum(p, distanceTable);
+        //final int dSum = SolverUtil.calcManhattanDistanceSum(p);
         return dSum;
     }
 }

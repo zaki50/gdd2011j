@@ -4,12 +4,10 @@ package org.zakky.gdd2011.slidepuzzle.solver;
 import org.zakky.gdd2011.slidepuzzle.Puzzle;
 import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 public final class SolverUtil {
-    static int calcManhattanDistanceSum(Puzzle p, boolean includeZero) {
+    static int calcManhattanDistanceSum(Puzzle p) {
         final int width = p.getWidth();
         final int height = p.getHeight();
 
@@ -23,10 +21,7 @@ public final class SolverUtil {
                 }
                 final int value;
                 if (c == '0') {
-                    if (!includeZero) {
-                        continue;
-                    }
-                    value = (width * height) - 1;
+                    continue;
                 } else if ('1' <= c && c <= '9') {
                     value = c - '1';
                 } else if ('A' <= c && c <= 'Z') {
@@ -48,57 +43,52 @@ public final class SolverUtil {
         return md;
     }
 
-    static int calcDistanceSum(Puzzle p, List<List<Integer>> table, boolean includeZero) {
+    static int calcDistanceSum(Puzzle p, int[][] table) {
         final int width = p.getWidth();
         final int height = p.getHeight();
+        final int length = width * height;
 
         int dSum = 0;
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                final char c = p.getAt(x, y);
-                if (c == '=') {
-                    // '=' は常に正しい位置と見なせるので md は 0
-                    continue;
-                }
-                final int value;
-                if (c == '0') {
-                    if (!includeZero) {
-                        continue;
-                    }
-                    value = (width * height) - 1;
-                } else if ('1' <= c && c <= '9') {
-                    value = c - '1';
-                } else if ('A' <= c && c <= 'Z') {
-                    value = c - 'A' + 9;
-                } else {
-                    throw new RuntimeException("invalid character: " + c);
-                }
-                final int x0 = value % width;
-                final int y0 = value / width;
-                final int d = calcDistance(p, table, x0, y0, x, y);
-                dSum += d;
+        for (int index = 0; index < length; index++) {
+            final char c = p.getAt(index);
+            if (c == '=') {
+                // '=' は常に正しい位置と見なせるので距離は 0
+                continue;
             }
+            final int value;
+            if (c == '0') {
+                // '=' は結果に含めないので距離は 0
+                continue;
+            } else if ('1' <= c && c <= '9') {
+                value = c - '1';
+            } else if ('A' <= c && c <= 'Z') {
+                value = c - 'A' + 9;
+            } else {
+                throw new RuntimeException("invalid character: " + c);
+            }
+            final int d = calcDistance(table, value, index);
+            dSum += d;
         }
         return dSum;
     }
 
-    static int calcDistance(Puzzle p, List<List<Integer>> table, int x0, int y0, int x, int y) {
-        final int d = table.get(p.toIndex(x0, y0)).get(p.toIndex(x, y));
+    static int calcDistance(int[][]  table, int index0, int index) {
+        final int d = table[index0][index];
         return d;
     }
 
-    public static List<List<Integer>> buildDistanceTable(Puzzle puzzle) {
-        final List<List<Integer>> table = new ArrayList<List<Integer>>();
+    public static int[][] buildDistanceTable(Puzzle puzzle) {
+        final int[][] table = new int[puzzle.getWidth() * puzzle.getHeight()][];
         for (int y = 0; y < puzzle.getHeight(); y++) {
             for (int x = 0; x < puzzle.getWidth(); x++) {
-                final List<Integer> distance = calcDistance(puzzle, x, y);
-                table.add(distance);
+                final int[] distance = calcDistance(puzzle, x, y);
+                table[puzzle.toIndex(x, y)] = distance;
             }
         }
         return table;
     }
 
-    static List<Integer> calcDistance(Puzzle puzzle, int x, int y) {
+    static int[] calcDistance(Puzzle puzzle, int x, int y) {
         // 未確定な距離は正数、確定な距離は0以下で表される要素を保持する配列
         final int[] lengths = new int[puzzle.getWidth() * puzzle.getHeight()];
         Arrays.fill(lengths, Integer.MAX_VALUE);
@@ -123,16 +113,16 @@ public final class SolverUtil {
             }
         } while (0 <= (currentIndex = find(lengths)));
 
-        final List<Integer> result = new ArrayList<Integer>(lengths.length);
-        for (int len : lengths) {
+        for (int i=0;i<lengths.length;i++){
+            final int len = lengths[i];
             if (0 < len) {
                 assert len == Integer.MAX_VALUE;
-                result.add(null);
+                lengths[i] = len;
             } else {
-                result.add(Integer.valueOf(-len));
+                lengths[i] = -len;
             }
         }
-        return result;
+        return lengths;
     }
 
     private static int find(int[] lengths) {

@@ -63,7 +63,7 @@ public class Main {
                 for (int i = 0; i < questionCount; i++) {
                     final String line = reader.readLine();
                     final Puzzle puzzle = new Puzzle(i, line);
-                    final List<List<Integer>> distanceTable = SolverUtil.buildDistanceTable(puzzle);
+                    final int[][] distanceTable = SolverUtil.buildDistanceTable(puzzle);
                     final SolvingState state = new SolvingState(puzzle, distanceTable, 0);
                     queue.offer(state);
                 }
@@ -107,7 +107,7 @@ public class Main {
                         for (SolvingState state = queue.poll(1000L, TimeUnit.MILLISECONDS); state != null; state = queue
                                 .poll(1000L, TimeUnit.MILLISECONDS)) {
                             final Puzzle puzzle = state.getTarget();
-                            final List<List<Integer>> distanceTable = state.getDistanceTable_();
+                            final int[][] distanceTable = state.getDistanceTable();
                             final int stepsLimit = state.getSearchedDepth() + 1;
                             final int id = puzzle.getId();
                             Thread.currentThread().setName(
