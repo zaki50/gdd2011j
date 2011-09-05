@@ -75,7 +75,7 @@ public class Main {
         }
 
         final List<List<String>> knownAnswers = new ArrayList<List<String>>(questionCount);
-        //readAnswers(questionCount, knownAnswers);
+        readAnswers(questionCount, knownAnswers);
 
         System.out.println(leftLimit + " " + rightLimit + " " + upLimit + " " + downLimit);
         System.out.println(questionCount);
