@@ -7,6 +7,18 @@ import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
 import java.util.Arrays;
 
 public final class SolverUtil {
+    static int toGoalIndex(char c) {
+        if ('1' <= c && c <= '9') {
+            final int index = c - '1';
+            return index;
+        }
+        if ('A' <= c && c <= 'Z') {
+            final int index = c - 'A' + 9;
+            return index;
+        }
+        throw new RuntimeException("invalid character: " + c);
+    }
+
     static int calcManhattanDistanceSum(Puzzle p) {
         final int width = p.getWidth();
         final int height = p.getHeight();
@@ -16,21 +28,19 @@ public final class SolverUtil {
             for (int y = 0; y < height; y++) {
                 final char c = p.getAt(x, y);
                 if (c == '=') {
-                    // '=' は常に正しい位置と見なせるので md は 0
+                    // '=' は常に正しい位置と見なせるので除外
                     continue;
                 }
-                final int value;
+                if (c == '0') {
+                    // '0' は結果に含めないので除外
+                    continue;
+                }
                 if (c == '0') {
                     continue;
-                } else if ('1' <= c && c <= '9') {
-                    value = c - '1';
-                } else if ('A' <= c && c <= 'Z') {
-                    value = c - 'A' + 9;
-                } else {
-                    throw new RuntimeException("invalid character: " + c);
                 }
-                final int x0 = value % width;
-                final int y0 = value / width;
+                final int goalIndex = toGoalIndex(c);
+                final int x0 = goalIndex % width;
+                final int y0 = goalIndex / width;
                 final int md = calcManhattanDistance(x0, y0, x, y);
                 mdSum += md;
             }
@@ -52,21 +62,15 @@ public final class SolverUtil {
         for (int index = 0; index < length; index++) {
             final char c = p.getAt(index);
             if (c == '=') {
-                // '=' は常に正しい位置と見なせるので距離は 0
+                // '=' は常に正しい位置と見なせるので除外
                 continue;
             }
-            final int value;
             if (c == '0') {
-                // '=' は結果に含めないので距離は 0
+                // '0' は結果に含めないので除外
                 continue;
-            } else if ('1' <= c && c <= '9') {
-                value = c - '1';
-            } else if ('A' <= c && c <= 'Z') {
-                value = c - 'A' + 9;
-            } else {
-                throw new RuntimeException("invalid character: " + c);
             }
-            final int d = calcDistance(table, value, index);
+            final int goalIndex = toGoalIndex(c);
+            final int d = calcDistance(table, goalIndex, index);
             dSum += d;
         }
         return dSum;

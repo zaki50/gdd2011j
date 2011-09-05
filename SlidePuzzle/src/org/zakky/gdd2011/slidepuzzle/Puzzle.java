@@ -153,6 +153,10 @@ public class Puzzle implements Cloneable {
         return (char) result;
     }
 
+    public int getZeroIndex() {
+        return zeroIndex_;
+    }
+
     public int getZeroX() {
         final int zeroX = zeroIndex_ % width_;
         return zeroX;

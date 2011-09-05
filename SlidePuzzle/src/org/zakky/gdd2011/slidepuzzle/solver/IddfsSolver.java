@@ -29,14 +29,17 @@ public final class IddfsSolver implements SlidePuzzleSolver {
             return null;
         }
 
-        final String result = search(initial_, stepLimit_);
+        final int distanceSum = SolverUtil.calcDistanceSum(initial_, distanceTable_);
+        final String result = search(initial_, stepLimit_, distanceSum);
         return result;
     }
 
-    private String search(Puzzle p, int stepLimit) {
+    private String search(Puzzle p, int stepLimit, int distanceSum) {
         if (stepLimit == 0) {
             return null;
         }
+
+        final int zeroIndex = p.getZeroIndex();
 
         stepLimit--;
         for (Direction dir : Direction.valuesByRandomOrder()) {
@@ -51,22 +54,22 @@ public final class IddfsSolver implements SlidePuzzleSolver {
                 return next.getHistory();
             }
 
-            final int dSum = getDistanceSum(next, distanceTable_);
+            final char movedChar = next.getAt(zeroIndex);
+            final int goalIndex = SolverUtil.toGoalIndex(movedChar);
+            final int oldDistance = SolverUtil.calcDistance(distanceTable_, goalIndex,
+                    next.getZeroIndex());
+            final int newDistance = SolverUtil.calcDistance(distanceTable_, goalIndex, zeroIndex);
+
+            final int dSum = distanceSum + (newDistance - oldDistance);
             if (stepLimit < dSum) {
                 continue;
             }
 
-            final String result = search(next, stepLimit);
+            final String result = search(next, stepLimit, dSum);
             if (result != null) {
                 return result;
             }
         }
         return null;
-    }
-
-    private static int getDistanceSum(Puzzle p, int[][] distanceTable) {
-        final int dSum = SolverUtil.calcDistanceSum(p, distanceTable);
-        //final int dSum = SolverUtil.calcManhattanDistanceSum(p);
-        return dSum;
     }
 }
