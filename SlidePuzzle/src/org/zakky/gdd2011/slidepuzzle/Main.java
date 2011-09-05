@@ -20,8 +20,6 @@ import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
 import org.zakky.gdd2011.slidepuzzle.solver.IddfsSolver;
 import org.zakky.gdd2011.slidepuzzle.solver.SolverUtil;
 
-import apple.laf.JRSUIConstants.Size;
-
 public class Main {
 
     @SuppressWarnings("unused")
