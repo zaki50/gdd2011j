@@ -21,6 +21,11 @@ public final class IddfsSolver implements SlidePuzzleSolver {
     }
 
     @Override
+    public String getName() {
+        return "iddfs-solver";
+    }
+
+    @Override
     public String solve() {
         final int mdZero = SolverUtil.calcManhattanDistance(initial_.getWidth() - 1,
                 initial_.getHeight() - 1, initial_.getZeroX(), initial_.getZeroY());
@@ -42,6 +47,9 @@ public final class IddfsSolver implements SlidePuzzleSolver {
         final int zeroIndex = p.getZeroIndex();
 
         stepLimit--;
+        
+        final Puzzle[] nextPuzzles = new Puzzle[4];
+        final int[] nextDsums = new int[4];
         for (Direction dir : Direction.valuesByRandomOrder()) {
             if (p.isBackword(dir)) {
                 continue;
@@ -65,7 +73,31 @@ public final class IddfsSolver implements SlidePuzzleSolver {
                 continue;
             }
 
-            final String result = search(next, stepLimit, dSum);
+            if (dSum < distanceSum) {
+                // 減る方向
+                for (int i=0;i<nextPuzzles.length;i++) {
+                    if (nextPuzzles[i] == null) {
+                        nextPuzzles[i] = next;
+                        nextDsums[i] = dSum;
+                        break;
+                    }
+                }
+            } else {
+                for (int i=nextPuzzles.length - 1;0 <= i;i--) {
+                    if (nextPuzzles[i] == null) {
+                        nextPuzzles[i] = next;
+                        nextDsums[i] = dSum;
+                        break;
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < nextPuzzles.length; i++) {
+            final Puzzle next = nextPuzzles[i];
+            if (next == null) {
+                continue;
+            }
+            final String result = search(next, stepLimit, nextDsums[i]);
             if (result != null) {
                 return result;
             }

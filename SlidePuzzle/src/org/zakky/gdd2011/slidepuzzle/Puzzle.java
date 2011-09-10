@@ -1,6 +1,7 @@
 
 package org.zakky.gdd2011.slidepuzzle;
 
+import java.util.Arrays;
 import java.util.Random;
 
 public class Puzzle implements Cloneable {
@@ -322,4 +323,8 @@ public class Puzzle implements Cloneable {
         return sb.toString();
     }
 
+    public int getBoardHash() {
+        final int hash = Arrays.hashCode(board_);
+        return hash;
+    }
 }
