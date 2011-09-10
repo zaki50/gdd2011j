@@ -39,6 +39,8 @@ public class SlidePuzzleSolverAppActivity extends Activity {
 
             private int mFound = 0;
 
+            private volatile boolean mQuit = false;
+
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
@@ -74,6 +76,9 @@ public class SlidePuzzleSolverAppActivity extends Activity {
                                 final SolvingState state = new SolvingState(puzzle, distanceTable,
                                         0);
                                 mQueue.offer(state);
+                                if (mQuit) {
+                                    return null;
+                                }
                             }
                         } finally {
                             reader.close();
@@ -94,6 +99,9 @@ public class SlidePuzzleSolverAppActivity extends Activity {
                 try {
                     for (SolvingState state = mQueue.poll(1000L, TimeUnit.MILLISECONDS); state != null; state = mQueue
                             .poll(1000L, TimeUnit.MILLISECONDS)) {
+                        if (mQuit) {
+                            return null;
+                        }
                         final Puzzle puzzle = state.getTarget();
                         final int[][] distanceTable = state.getDistanceTable();
                         int stepsLimit = state.getSearchedDepth() + 1;
@@ -141,6 +149,7 @@ public class SlidePuzzleSolverAppActivity extends Activity {
             @Override
             protected void onCancelled() {
                 super.onCancelled();
+                mQuit = true;
                 mProgress.dismiss();
             }
 
