@@ -295,7 +295,7 @@ public class Puzzle implements Cloneable {
             for (int x = 0; x < width_; x++) {
                 char ch = getAt(x, y);
                 if (ch == '0') {
-                    if (history_.isEmpty()) {
+                    if (history_.length() == 0) {
                         ch = ' ';
                     } else {
                         final Direction lastMove = Direction.fromLetter(//

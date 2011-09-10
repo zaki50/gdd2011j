@@ -16,7 +16,7 @@ public class FormatterMain {
         final int upLimit;
         final int downLimit;
 
-        final String input = (args.length == 0) ? "./answers/answer3.txt" : args[0];
+        final String input = (args.length == 0) ? "./answers/a" : args[0];
         final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(
                 input), "iso8859-1"));
         try {

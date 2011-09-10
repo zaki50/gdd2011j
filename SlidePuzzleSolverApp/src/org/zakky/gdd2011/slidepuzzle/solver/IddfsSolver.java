@@ -47,9 +47,6 @@ public final class IddfsSolver implements SlidePuzzleSolver {
         final int zeroIndex = p.getZeroIndex();
 
         stepLimit--;
-        
-        final Puzzle[] nextPuzzles = new Puzzle[4];
-        final int[] nextDsums = new int[4];
         for (Direction dir : Direction.valuesByRandomOrder()) {
             if (p.isBackword(dir)) {
                 continue;
@@ -73,31 +70,7 @@ public final class IddfsSolver implements SlidePuzzleSolver {
                 continue;
             }
 
-            if (dSum < distanceSum) {
-                // 減る方向
-                for (int i=0;i<nextPuzzles.length;i++) {
-                    if (nextPuzzles[i] == null) {
-                        nextPuzzles[i] = next;
-                        nextDsums[i] = dSum;
-                        break;
-                    }
-                }
-            } else {
-                for (int i=nextPuzzles.length - 1;0 <= i;i--) {
-                    if (nextPuzzles[i] == null) {
-                        nextPuzzles[i] = next;
-                        nextDsums[i] = dSum;
-                        break;
-                    }
-                }
-            }
-        }
-        for (int i = 0; i < nextPuzzles.length; i++) {
-            final Puzzle next = nextPuzzles[i];
-            if (next == null) {
-                continue;
-            }
-            final String result = search(next, stepLimit, nextDsums[i]);
+            final String result = search(next, stepLimit, dSum);
             if (result != null) {
                 return result;
             }

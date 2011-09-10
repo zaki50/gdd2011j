@@ -8,13 +8,18 @@ import org.zakky.gdd2011.slidepuzzle.Puzzle;
 import org.zakky.gdd2011.slidepuzzle.SlidePuzzleSolver;
 import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
 
-public class BfsSolver implements SlidePuzzleSolver {
+public final class BfsSolver implements SlidePuzzleSolver {
 
     private final Puzzle initial_;
 
     public BfsSolver(Puzzle puzzle) {
         super();
         initial_ = puzzle;
+    }
+
+    @Override
+    public String getName() {
+        return "bfs-solver";
     }
 
     @Override

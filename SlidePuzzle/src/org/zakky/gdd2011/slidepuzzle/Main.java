@@ -17,6 +17,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
+import org.zakky.gdd2011.slidepuzzle.solver.IdLimitedBfsSolver;
 import org.zakky.gdd2011.slidepuzzle.solver.IddfsSolver;
 import org.zakky.gdd2011.slidepuzzle.solver.SolverUtil;
 
@@ -98,9 +99,10 @@ public class Main {
 
         Direction.setSeed(100L);
 
-        for (int i = 0; i < THREAD_COUNT; i++) {
+        final Thread[] workers = new Thread[THREAD_COUNT];
+        for (int i = 0; i < workers.length; i++) {
             final int threadId = i;
-            new Thread("iddfs-solver-" + threadId) {
+            workers[i] = new Thread("solver-" + threadId) {
                 @Override
                 public void run() {
                     try {
@@ -108,19 +110,33 @@ public class Main {
                                 .poll(1000L, TimeUnit.MILLISECONDS)) {
                             final Puzzle puzzle = state.getTarget();
                             final int[][] distanceTable = state.getDistanceTable();
-                            final int stepsLimit = state.getSearchedDepth() + 1;
+                            int stepsLimit = state.getSearchedDepth() + 1;
+                            final SlidePuzzleSolver solver;
+                            if (stepsLimit <= 58) {
+                                solver = new IddfsSolver(puzzle, distanceTable, stepsLimit);
+                            } else {
+                                if (stepsLimit < 100) {
+                                    stepsLimit = 100;
+                                } else {
+                                    stepsLimit += 100;
+                                }
+                                solver = new IdLimitedBfsSolver(puzzle, distanceTable, stepsLimit);
+                            }
+
                             final int id = puzzle.getId();
                             Thread.currentThread().setName(
-                                    "iddfs-solver-" + threadId + "-p" + id + "-d" + stepsLimit);
-                            final IddfsSolver solver = new IddfsSolver(puzzle, distanceTable,
-                                    stepsLimit);
+                                    solver.getName() + "-" + threadId + "-p" + id + "-d"
+                                            + stepsLimit);
+                            //final long begin = System.nanoTime();
                             final String answer = solver.solve();
+                            //final long end = System.nanoTime();
                             if (answer == null) {
                                 // 見つからなかったので、探索済みステップ数を更新した新しいステートをoffer
                                 final SolvingState newState = new SolvingState(puzzle,
                                         distanceTable, stepsLimit);
                                 queue.offer(newState);
                             } else {
+                                //System.out.println(TimeUnit.NANOSECONDS.toMillis(end - begin) + "ms");
                                 incrementUsedCount(id, answer, puzzle);
                             }
                         }
@@ -128,7 +144,8 @@ public class Main {
                         e.printStackTrace();
                     }
                 }
-            }.start();
+            };
+            workers[i].start();
         }
     }
 
