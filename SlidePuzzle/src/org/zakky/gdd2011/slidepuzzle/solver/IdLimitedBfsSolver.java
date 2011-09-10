@@ -19,13 +19,14 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
 
     private final Set<Integer> knownState_ = new HashSet<Integer>();
 
-    private static final int STATE_LIMIT = 1000 * 50;
+    private final int statesLimit_;
 
-    public IdLimitedBfsSolver(Puzzle puzzle, int[][] distanceTable, int stepLimit) {
+    public IdLimitedBfsSolver(Puzzle puzzle, int[][] distanceTable, int stepLimit, int statesLimit) {
         super();
         initial_ = puzzle;
         distanceTable_ = distanceTable;
         stepLimit_ = stepLimit;
+        statesLimit_ = statesLimit;
     }
 
     @Override
@@ -101,7 +102,7 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
                         continue;
                     }
 
-                    if (overflow || STATE_LIMIT < output.size()) {
+                    if (overflow || statesLimit_ < output.size()) {
                         overflow = true;
                         output.pollLast();
                     }

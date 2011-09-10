@@ -100,6 +100,8 @@ public class Main {
         Direction.setSeed(100L);
 
         final Thread[] workers = new Thread[THREAD_COUNT];
+        final BlockingQueue<SolvingState> unsolved = new LinkedBlockingDeque<SolvingState>(
+                questionCount);
         for (int i = 0; i < workers.length; i++) {
             final int threadId = i;
             workers[i] = new Thread("solver-" + threadId) {
@@ -116,7 +118,8 @@ public class Main {
                                 solver = new IddfsSolver(puzzle, distanceTable, stepsLimit);
                             } else {
                                 stepsLimit = 200;
-                                solver = new IdLimitedBfsSolver(puzzle, distanceTable, stepsLimit);
+                                solver = new IdLimitedBfsSolver(puzzle, distanceTable, stepsLimit,
+                                        50 * 1000);
                             }
 
                             final int id = puzzle.getId();
@@ -127,11 +130,15 @@ public class Main {
                             final String answer = solver.solve();
                             //final long end = System.nanoTime();
                             if (answer == null) {
-                                // 見つからなかったので、探索済みステップ数を更新した新しいステートをoffer
-                                // TODO IdLimitedBfsSolver でもダメだった時の処理
                                 final SolvingState newState = new SolvingState(puzzle,
                                         distanceTable, stepsLimit);
-                                queue.offer(newState);
+                                if (stepsLimit < 200) {
+                                    // 見つからなかったので、探索済みステップ数を更新した新しいステートをoffer
+                                    queue.offer(newState);
+                                } else {
+                                    // 200 手まで探索してダメだったので次の作戦へ
+                                    unsolved.offer(newState);
+                                }
                             } else {
                                 //System.out.println(TimeUnit.NANOSECONDS.toMillis(end - begin) + "ms");
                                 incrementUsedCount(id, answer, puzzle);
@@ -144,6 +151,40 @@ public class Main {
             };
             workers[i].start();
         }
+
+        for (Thread worker : workers) {
+            worker.join();
+        }
+
+        try {
+            for (SolvingState state = unsolved.poll(1000L, TimeUnit.MILLISECONDS); state != null; state = unsolved
+                    .poll(1000L, TimeUnit.MILLISECONDS)) {
+                final Puzzle puzzle = state.getTarget();
+                final int[][] distanceTable = state.getDistanceTable();
+                int stepsLimit = state.getSearchedDepth();
+                final SlidePuzzleSolver solver = new IdLimitedBfsSolver(puzzle, distanceTable,
+                        stepsLimit, 400 * 1000);
+                final int id = puzzle.getId();
+                Thread.currentThread().setName(solver.getName() + "-p" + id + "-d" + stepsLimit);
+                //final long begin = System.nanoTime();
+                String answer;
+                try {
+                    answer = solver.solve();
+                } catch (OutOfMemoryError e) {
+                    answer = null;
+                }
+                //final long end = System.nanoTime();
+                if (answer == null) {
+                    System.out.println((id + 1) + ":");
+                } else {
+                    //System.out.println(TimeUnit.NANOSECONDS.toMillis(end - begin) + "ms");
+                    incrementUsedCount(id, answer, puzzle);
+                }
+            }
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
     }
 
     private static void readAnswers(final int questionCount, final List<List<String>> knownAnswers)
