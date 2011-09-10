@@ -19,7 +19,7 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
 
     private final Set<Integer> knownState_ = new HashSet<Integer>();
 
-    private static final int STATE_LIMIT = 1000 * 30;
+    private static final int STATE_LIMIT = 1000 * 50;
 
     public IdLimitedBfsSolver(Puzzle puzzle, int[][] distanceTable, int stepLimit) {
         super();

@@ -115,11 +115,7 @@ public class Main {
                             if (stepsLimit <= 58) {
                                 solver = new IddfsSolver(puzzle, distanceTable, stepsLimit);
                             } else {
-                                if (stepsLimit < 100) {
-                                    stepsLimit = 100;
-                                } else {
-                                    stepsLimit += 100;
-                                }
+                                stepsLimit = 200;
                                 solver = new IdLimitedBfsSolver(puzzle, distanceTable, stepsLimit);
                             }
 
@@ -132,6 +128,7 @@ public class Main {
                             //final long end = System.nanoTime();
                             if (answer == null) {
                                 // 見つからなかったので、探索済みステップ数を更新した新しいステートをoffer
+                                // TODO IdLimitedBfsSolver でもダメだった時の処理
                                 final SolvingState newState = new SolvingState(puzzle,
                                         distanceTable, stepsLimit);
                                 queue.offer(newState);
