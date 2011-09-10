@@ -76,6 +76,29 @@ public final class SolverUtil {
         return dSum;
     }
 
+    static int calcDistance2Sum(Puzzle p, int[][] table) {
+        final int width = p.getWidth();
+        final int height = p.getHeight();
+        final int length = width * height;
+
+        int dSum = 0;
+        for (int index = 0; index < length; index++) {
+            final char c = p.getAt(index);
+            if (c == '=') {
+                // '=' は常に正しい位置と見なせるので除外
+                continue;
+            }
+            if (c == '0') {
+                // '0' は結果に含めないので除外
+                continue;
+            }
+            final int goalIndex = toGoalIndex(c);
+            final int d = calcDistance(table, goalIndex, index);
+            dSum += (d * d);
+        }
+        return dSum;
+    }
+
     static int calcDistance(int[][]  table, int index0, int index) {
         final int d = table[index0][index];
         return d;

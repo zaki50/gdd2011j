@@ -1,7 +1,6 @@
 
 package org.zakky.gdd2011.slidepuzzle.solver;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -17,11 +16,11 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
     private final int[][] distanceTable_;
 
     private final int stepLimit_;
-    
+
     private final Set<Integer> knownState_ = new HashSet<Integer>();
 
-    private static final int STATE_LIMIT = 1000 * 10;
-    
+    private static final int STATE_LIMIT = 1000 * 30;
+
     public IdLimitedBfsSolver(Puzzle puzzle, int[][] distanceTable, int stepLimit) {
         super();
         initial_ = puzzle;
@@ -39,12 +38,13 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
         if (initial_.isCleared()) {
             return initial_.getHistory();
         }
-        
+
         TreeSet<PuzzleState> input = new TreeSet<PuzzleState>();
         TreeSet<PuzzleState> output = new TreeSet<PuzzleState>();
 
         final int distance = SolverUtil.calcDistanceSum(initial_, distanceTable_);
-        final PuzzleState initialState = new PuzzleState(initial_, distance);
+        final int scoreSum = SolverUtil.calcDistance2Sum(initial_, distanceTable_);
+        final PuzzleState initialState = new PuzzleState(initial_, distance, scoreSum);
 
         output.add(initialState);
         knownState_.add(initial_.getBoardHash());
@@ -58,14 +58,15 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
             if (stepLimit_ <= consumedSteps) {
                 return null;
             }
-            
+
             boolean overflow = false;
 
             while (!input.isEmpty()) {
                 final PuzzleState state = input.pollFirst();
                 final Puzzle p = state.target_;
                 final int distanceSum = state.distanceSum_;
-                
+                final int oldScoreSum = state.scoreSum_;
+
                 // TODO 距離の2乗での足切りを行う。
                 // TODO 盤面の状態を保持し、重複を排除する
 
@@ -99,15 +100,17 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
                         //System.out.println("known state");
                         continue;
                     }
-                    
+
                     if (overflow || STATE_LIMIT < output.size()) {
-//                        if (!overflow) {
-//                            System.out.println("overflowed");
-//                        }
                         overflow = true;
                         output.pollLast();
                     }
-                    if (!output.add(new PuzzleState(next, dSum))) {
+
+                    final int oldScoreForMoved = oldDistance * oldDistance;
+                    final int newScoreForMoved = newDistance * newDistance;
+                    final int newScoreSum = oldScoreSum + (newScoreForMoved - oldScoreForMoved);
+
+                    if (!output.add(new PuzzleState(next, dSum, newScoreSum))) {
                         throw new RuntimeException("should not happen.");
                     }
                 }
@@ -119,12 +122,15 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
     final class PuzzleState implements Comparable<PuzzleState> {
         final int distanceSum_;
 
+        final int scoreSum_;
+
         final Puzzle target_;
 
-        public PuzzleState(Puzzle target, int distanceSum) {
+        public PuzzleState(Puzzle target, int distanceSum, int scoreSum) {
             super();
             target_ = target;
             distanceSum_ = distanceSum;
+            scoreSum_ = scoreSum;
         }
 
         @Override
@@ -132,10 +138,10 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
             if (o == this) {
                 return 0;
             }
-            if (distanceSum_ < o.distanceSum_) {
+            if (scoreSum_ < o.scoreSum_) {
                 return -1;
             }
-            if (o.distanceSum_ < distanceSum_) {
+            if (o.scoreSum_ < scoreSum_) {
                 return 1;
             }
 
