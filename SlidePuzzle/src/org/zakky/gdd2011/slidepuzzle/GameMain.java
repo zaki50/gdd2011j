@@ -1,8 +1,8 @@
 
 package org.zakky.gdd2011.slidepuzzle;
 
-import java.io.IOException;
-import java.io.PushbackInputStream;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 
 import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
 
@@ -13,12 +13,13 @@ public class GameMain {
     private static Puzzle current__ = null;
 
     public static void main(String[] args) throws Exception {
-        final PushbackInputStream in = new PushbackInputStream(System.in, 1);
+        final BufferedReader reader = new BufferedReader(new InputStreamReader(System.in,
+                "iso8859-1"));
 
-        int c;
-        while (0 <= (c = in.read())) {
-            final char ch = (char) c;
-            switch (c) {
+        String line;
+        while ((line = reader.readLine()) != null && !line.isEmpty()) {
+            final char ch = (char) line.charAt(0);
+            switch (ch) {
                 case 'U':
                 case 'k':
                     move(Direction.UP);
@@ -36,7 +37,7 @@ public class GameMain {
                     move(Direction.RIGHT);
                     break;
                 case '=': {
-                    final String puzzleStr = readLine(in).trim();
+                    final String puzzleStr = line.substring(1).trim();
                     load(puzzleStr);
                     break;
                 }
@@ -45,28 +46,11 @@ public class GameMain {
                     reset();
                     break;
                 default: {
-                    final String line = readLine(in);
-                    System.err.println("unknown command: " + (ch + line));
+                    System.err.println("unknown command: " + line);
                     break;
                 }
             }
         }
-    }
-
-    private static String readLine(PushbackInputStream in) throws IOException {
-        final StringBuilder sb = new StringBuilder();
-
-        int c;
-        for (c = in.read(); 0 <= c && c != '\r' && c != '\n'; c = in.read()) {
-            sb.append((char) c);
-        }
-        if (0 <= c && 0 < in.available()) {
-            final int extra = in.read();
-            if (0 <= extra && extra != '\r' && extra != '\n') {
-                in.unread(extra);
-            }
-        }
-        return sb.toString();
     }
 
     private static void load(String puzzleStr) {
