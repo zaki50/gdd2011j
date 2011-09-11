@@ -320,6 +320,8 @@ public class Puzzle implements Cloneable {
             }
             sb.append(newLine);
         }
+        sb.append(newLine);
+        sb.append(history_).append(newLine);
         return sb.toString();
     }
 
