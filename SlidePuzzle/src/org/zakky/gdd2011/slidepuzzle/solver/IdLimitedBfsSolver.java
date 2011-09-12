@@ -21,12 +21,20 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
 
     private final int statesLimit_;
 
+    private final char[] goal_;
+
     public IdLimitedBfsSolver(Puzzle puzzle, int[][] distanceTable, int stepLimit, int statesLimit) {
+        this(puzzle, distanceTable, stepLimit, statesLimit, null);
+    }
+
+    public IdLimitedBfsSolver(Puzzle puzzle, int[][] distanceTable, int stepLimit, int statesLimit,
+            char[] goal) {
         super();
         initial_ = puzzle;
         distanceTable_ = distanceTable;
         stepLimit_ = stepLimit;
         statesLimit_ = statesLimit;
+        goal_ = goal;
     }
 
     @Override
@@ -36,7 +44,7 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
 
     @Override
     public String solve() {
-        if (initial_.isCleared()) {
+        if (isSolved(initial_)) {
             return initial_.getHistory();
         }
 
@@ -68,9 +76,6 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
                 final int distanceSum = state.distanceSum_;
                 final int oldScoreSum = state.scoreSum_;
 
-                // TODO 距離の2乗での足切りを行う。
-                // TODO 盤面の状態を保持し、重複を排除する
-
                 final int zeroIndex = p.getZeroIndex();
 
                 for (Direction dir : Direction.valuesByRandomOrder()) {
@@ -81,7 +86,7 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
                     if (next == null) {
                         continue;
                     }
-                    if (next.isCleared()) {
+                    if (isSolved(next)) {
                         return next.getHistory();
                     }
 
@@ -118,6 +123,16 @@ public final class IdLimitedBfsSolver implements SlidePuzzleSolver {
             }
         }
         return null;
+    }
+
+    private boolean isSolved(Puzzle p) {
+        final boolean solved;
+        if (goal_ == null) {
+            solved = p.isCleared();
+        } else {
+            solved = p.matches(goal_);
+        }
+        return solved;
     }
 
     final class PuzzleState implements Comparable<PuzzleState> {

@@ -236,6 +236,18 @@ public class Puzzle implements Cloneable {
         return true;
     }
 
+    public boolean matches(char[] board) {
+        if (board == null || board.length != board_.length) {
+            return false;
+        }
+        for (int i = 0; i < board_.length; i++) {
+            if (board[i] != ' '/*wildcard*/&& board_[i] != board[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public String getHistory() {
         return history_.toString();
     }

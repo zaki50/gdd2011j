@@ -13,11 +13,18 @@ public final class IddfsSolver implements SlidePuzzleSolver {
 
     private final int[][] distanceTable_;
 
+    private final char[] goal_;
+
     public IddfsSolver(Puzzle puzzle, int[][] distanceTable, int stepLimit) {
+        this(puzzle, distanceTable, stepLimit, null);
+    }
+
+    public IddfsSolver(Puzzle puzzle, int[][] distanceTable, int stepLimit, char[] goal) {
         super();
         initial_ = puzzle;
         stepLimit_ = stepLimit;
         distanceTable_ = distanceTable;
+        goal_ = goal;
     }
 
     @Override
@@ -47,7 +54,7 @@ public final class IddfsSolver implements SlidePuzzleSolver {
         final int zeroIndex = p.getZeroIndex();
 
         stepLimit--;
-        
+
         final Puzzle[] nextPuzzles = new Puzzle[4];
         final int[] nextDsums = new int[4];
         for (Direction dir : Direction.valuesByRandomOrder()) {
@@ -58,7 +65,7 @@ public final class IddfsSolver implements SlidePuzzleSolver {
             if (next == null) {
                 continue;
             }
-            if (next.isCleared()) {
+            if (isSolved(next)) {
                 return next.getHistory();
             }
 
@@ -75,7 +82,7 @@ public final class IddfsSolver implements SlidePuzzleSolver {
 
             if (dSum < distanceSum) {
                 // 減る方向
-                for (int i=0;i<nextPuzzles.length;i++) {
+                for (int i = 0; i < nextPuzzles.length; i++) {
                     if (nextPuzzles[i] == null) {
                         nextPuzzles[i] = next;
                         nextDsums[i] = dSum;
@@ -83,7 +90,7 @@ public final class IddfsSolver implements SlidePuzzleSolver {
                     }
                 }
             } else {
-                for (int i=nextPuzzles.length - 1;0 <= i;i--) {
+                for (int i = nextPuzzles.length - 1; 0 <= i; i--) {
                     if (nextPuzzles[i] == null) {
                         nextPuzzles[i] = next;
                         nextDsums[i] = dSum;
@@ -103,5 +110,15 @@ public final class IddfsSolver implements SlidePuzzleSolver {
             }
         }
         return null;
+    }
+
+    private boolean isSolved(Puzzle p) {
+        final boolean solved;
+        if (goal_ == null) {
+            solved = p.isCleared();
+        } else {
+            solved = p.matches(goal_);
+        }
+        return solved;
     }
 }
