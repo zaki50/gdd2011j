@@ -17,7 +17,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 import org.zakky.gdd2011.slidepuzzle.Puzzle.Direction;
-import org.zakky.gdd2011.slidepuzzle.solver.IdLimitedBfsSolver;
+import org.zakky.gdd2011.slidepuzzle.solver.LimitedStatesBfsSolver;
 import org.zakky.gdd2011.slidepuzzle.solver.IddfsSolver;
 import org.zakky.gdd2011.slidepuzzle.solver.SolverUtil;
 
@@ -118,7 +118,7 @@ public class Main {
                                 solver = new IddfsSolver(puzzle, distanceTable, stepsLimit);
                             } else {
                                 stepsLimit = 200;
-                                solver = new IdLimitedBfsSolver(puzzle, distanceTable, stepsLimit,
+                                solver = new LimitedStatesBfsSolver(puzzle, distanceTable, stepsLimit,
                                         50 * 1000);
                             }
 
@@ -162,7 +162,7 @@ public class Main {
                 final Puzzle puzzle = state.getTarget();
                 final int[][] distanceTable = state.getDistanceTable();
                 int stepsLimit = state.getSearchedDepth();
-                final SlidePuzzleSolver solver = new IdLimitedBfsSolver(puzzle, distanceTable,
+                final SlidePuzzleSolver solver = new LimitedStatesBfsSolver(puzzle, distanceTable,
                         stepsLimit, 400 * 1000);
                 final int id = puzzle.getId();
                 Thread.currentThread().setName(solver.getName() + "-p" + id + "-d" + stepsLimit);
