@@ -40,7 +40,7 @@ public class Puzzle implements Cloneable {
             return letter_;
         }
 
-        public Direction backword() {
+        public Direction backward() {
             switch (this) {
                 case UP:
                     return DOWN;
@@ -203,7 +203,7 @@ public class Puzzle implements Cloneable {
         }
 
         final char lastMove = history_.charAt(history_.length() - 1);
-        return lastMove == dir.backword().getLetter();
+        return lastMove == dir.backward().getLetter();
     }
 
     public Puzzle move(Direction dir) {
