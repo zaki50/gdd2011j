@@ -5,6 +5,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.zakky.gdd2011.slidepuzzle.client.GreetingService;
 import org.zakky.gdd2011.slidepuzzle.server.Puzzle.Direction;
 
@@ -15,11 +17,14 @@ import com.google.gwt.user.server.rpc.RemoteServiceServlet;
  */
 @SuppressWarnings("serial")
 public class GreetingServiceImpl extends RemoteServiceServlet implements GreetingService {
-
+    private static final Log LOGGER = LogFactory.getLog(GreetingServiceImpl.class);
+    
     public String greetServer(String input) throws IllegalArgumentException {
         if (input.contains("UUDDLRLRBA") || input.contains("↑↑↓↓←→←→BA")) {
             return "KONAMI!";
         }
+
+        LOGGER.info(input);
 
         int okCount = 0;
         int ngCount = 0;
